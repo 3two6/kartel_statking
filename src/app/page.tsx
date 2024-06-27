@@ -1,10 +1,7 @@
-"use client";
+import dynamic from "next/dynamic";
 
-import HomeSection from "@/section/home";
+const HomeSection = dynamic(() => import("@/section/home"), { ssr: false });
 
 export default function Home() {
-
-  return (
-    <HomeSection />
-  );
+  return <HomeSection />;
 }
