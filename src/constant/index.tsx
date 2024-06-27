@@ -80,7 +80,7 @@ export const chartData = {
   },
   series: [
     {
-      name: "kart",
+      name: "KART",
       data: [0, 2, 3, 4, 5, 6, 7, 10],
       color: "#A326D4",
       labels: {
