@@ -17,7 +17,7 @@ export const NavItems = [
 
 export const Kartprices = [
   { label: "Rewards earned daily", value: "0 USD" },
-  { label: "Kart price", value: "0.032 USDC" },
+  { label: "KART price", value: "0.032 USDC" },
 ];
 
 export const KartPositions: KartPosition[] = [
@@ -29,7 +29,7 @@ export const Stakings = [
   { label: "Market Cap", value: 4807737, unit: "$" },
   { label: "Circulating Supply", value: 151606080, unit: "kart" },
   { label: "Staking APR", value: 28.48, unit: "%" },
-  { label: "Kart Price", value: 0.032, unit: "USDC" },
+  { label: "KART Price", value: 0.032, unit: "USDC" },
 ];
 
 export const StakingOptions = [

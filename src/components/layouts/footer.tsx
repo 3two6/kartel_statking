@@ -8,7 +8,7 @@ export default function Footer() {
       <div className="flex items-center justify-between px-6 py-8 sm:mx-20 lg:px-8">
         <div className="sm:mt-8 md:order-1 md:mt-0">
           <p className="text-center text-sm leading-5 text-white">
-            Kart Staking © 2024, All rights reserved.
+            KART Staking © 2024, All rights reserved.
           </p>
         </div>
         <div className="flex justify-center space-x-6 md:order-2">

@@ -111,7 +111,7 @@ export default function ConnectWallet() {
                             key={index}
                         >
                             <div className="flex flex-row items-center gap-5">
-                                <Image src={item.image} className="h-8 w-8" alt={item.name} />
+                                <Image src={item.image} className="h-8 w-8" alt={item.name} width={32} height={32} />
                                 <span className="text-start text-lg text-white">
                                     {item.name}
                                 </span>

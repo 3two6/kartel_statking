@@ -7,8 +7,8 @@ import AppLayouts from "@/components/layouts";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Kart Staking",
-  description: "Kart Staking",
+  title: "KART Staking",
+  description: "KART Staking",
 };
 
 export default function RootLayout({
