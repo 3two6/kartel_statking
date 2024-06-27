@@ -13,7 +13,7 @@ export default function Footer() {
         </div>
         <div className="flex justify-center space-x-6 md:order-2">
           {SocialLinks.map((item, index) => (
-            <Link key={index} href={item.value}>
+            <Link key={index} href={item.href} target="_blank">
               <Image
                 src={item.icon}
                 alt={item.label}

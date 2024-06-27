@@ -38,11 +38,12 @@ export const StakingOptions = [
 ];
 
 export const SocialLinks = [
-  { label: "Twitter", value: "twitter", icon: "/images/layouts/twitter.svg" },
+  { label: "Twitter", value: "twitter", icon: "/images/layouts/twitter.svg", href: "https://x.com/kartelProject" },
   {
     label: "Telegram",
     value: "telegram",
     icon: "/images/layouts/telegram.svg",
+    href: "https://t.me/thekartelprojectchat"
   },
 ];
 
