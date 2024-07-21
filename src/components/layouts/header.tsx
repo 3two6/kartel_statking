@@ -8,7 +8,14 @@ import ConnectWallet from "../connect-wallet";
 import { useWallet } from "@/provider/crypto/wallet";
 import WalletBtnDropdown from "../wallet-btn-dropdown";
 import { Menu } from "lucide-react";
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "../ui/navigation-menu";
+import {
+    NavigationMenu,
+    NavigationMenuContent,
+    NavigationMenuItem,
+    NavigationMenuLink,
+    NavigationMenuList,
+    NavigationMenuTrigger,
+} from "../ui/navigation-menu";
 
 export default function Header() {
     const pathname = usePathname();
@@ -30,12 +37,12 @@ export default function Header() {
                         KART Staking
                     </span>
                 </Link>
-                <div className="flex gap-5 sm:space-x-4">
+                <div className="flex gap-2 sm:space-x-4">
                     {NavItems.map((item, index) => (
                         <Link
                             key={index}
                             href={item.href}
-                            className={`sm:flex hidden uppercase text-base font-medium rounded-sm py-2 sm:px-4 ${pathname === item.href ? "text-purple font-semibold" : "text-white"}`}
+                            className={`sm:flex hidden uppercase text-base font-medium rounded-sm py-2 ${pathname === item.href ? "text-purple font-semibold" : "text-white"}`}
                         >
                             {item.label}
                         </Link>
@@ -48,27 +55,24 @@ export default function Header() {
                                 </NavigationMenuTrigger>
                                 <NavigationMenuContent className="border-none bg-[#0D0B32CC]">
                                     <ul className="flex bg-transparent">
-                                        {
-                                            NavItems.map((item, index) => (
-                                                <li className="" key={index}>
-                                                    <NavigationMenuLink asChild className="bg-transparent">
-                                                        <Link
-                                                            className="flex h-full bg-transparent text-gray-300 hover:text-purple w-full select-none flex-col justify-end rounded-md p-3"
-                                                            href={item.href}
-                                                        >
-                                                            {item.label}
-                                                        </Link>
-                                                    </NavigationMenuLink>
-                                                </li>
-                                            ))
-                                        }
+                                        {NavItems.map((item, index) => (
+                                            <li className="" key={index}>
+                                                <NavigationMenuLink asChild className="bg-transparent">
+                                                    <Link
+                                                        className="flex h-full bg-transparent text-gray-300 hover:text-purple w-full select-none flex-col justify-end rounded-md p-3"
+                                                        href={item.href}
+                                                    >
+                                                        {item.label}
+                                                    </Link>
+                                                </NavigationMenuLink>
+                                            </li>
+                                        ))}
                                     </ul>
                                 </NavigationMenuContent>
                             </NavigationMenuItem>
                         </NavigationMenuList>
                     </NavigationMenu>
                 </div>
-
             </div>
             {account?.address ? <WalletBtnDropdown /> : <ConnectWallet />}
         </div>

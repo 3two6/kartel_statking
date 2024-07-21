@@ -13,24 +13,22 @@ import { useWallet } from "@/provider/crypto/wallet";
 import useToast from "@/hooks/use-toast";
 
 export default function StakingSection() {
-
   const [selectedOption, setSelectedOption] = useState<string>(
     StakingOptions[0].value,
   );
 
-  const [{ query }] = useNetwork()
+  const [{ query }] = useNetwork();
 
-  const { account, signAndBroadcast } = useWallet()
+  const { account, signAndBroadcast } = useWallet();
 
-  const appState = useAppState()
-  const { bond, unbond } = useAppActions()
+  const appState = useAppState();
+  const { bond, unbond } = useAppActions();
 
   const toast = useToast();
 
-  const kartBalance = toHuman(
-    BigNumber.from(appState.kartBalance), 6
-  ).toFixed(2)
-
+  const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(
+    2,
+  );
 
   const handleStake = async () => {
     if (!account) {
@@ -44,13 +42,12 @@ export default function StakingSection() {
     }
 
     try {
-      await bond(100, account.address, signAndBroadcast, query)
+      await bond(100, account.address, signAndBroadcast, query);
       // toast.success("Stake KART success");
     } catch (err) {
       // toast.error("User rejected transaction");
     }
-  }
-
+  };
 
   const handleUnstake = async () => {
     if (!account) {
@@ -64,14 +61,12 @@ export default function StakingSection() {
     }
 
     try {
-      await unbond(10, account.address, signAndBroadcast, query)
+      await unbond(10, account.address, signAndBroadcast, query);
       // toast.success("Stake KART success");
     } catch (err) {
       // toast.error("User rejected transaction");
     }
-  }
-
-
+  };
 
   return (
     <div className="relative z-10 flex w-full flex-col items-center px-4 py-5 sm:px-6 sm:pt-0 lg:px-8">
@@ -159,7 +154,11 @@ export default function StakingSection() {
         </div>
         <button
           className={`bg-purple border w-full rounded py-3 text-gray-300 transition-all duration-100 ease-in-out ${selectedOption === StakingOptions[0].value ? "bg-purple border-transparent" : "bg-transparent border-purple-border"}`}
-          onClick={selectedOption === StakingOptions[0].value ? handleStake : handleUnstake}
+          onClick={
+            selectedOption === StakingOptions[0].value
+              ? handleStake
+              : handleUnstake
+          }
         >
           {selectedOption === StakingOptions[0].value ? "Stake" : "Unstake"}
         </button>
