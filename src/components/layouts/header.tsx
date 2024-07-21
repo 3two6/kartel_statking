@@ -33,8 +33,8 @@ export default function Header() {
                         src="/images/logo.png"
                         priority
                     />
-                    <span className="sm:flex hidden text-white text-2xl font-semibold">
-                        KART Staking
+                    <span className="sm:flex hidden text-white text-2xl font-semibold uppercase">
+                        Kart Staking
                     </span>
                 </Link>
                 <div className="flex gap-2 sm:space-x-4">
