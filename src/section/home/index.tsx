@@ -8,12 +8,24 @@ import {
   Kartprices,
   PortfolioDayOptions,
   chartData,
-} from "@/constant";
+} from "../../constant";
 import Image from "next/image";
 import { useState } from "react";
+import { useAppState } from "@/store/app.store";
+import { toHuman } from "kujira.js";
+import { BigNumber } from "@ethersproject/bignumber";
+import Link from "next/link";
 
 export default function HomeSection() {
   const [selectedDay, setSelectedDay] = useState(PortfolioDayOptions[2].value);
+
+  const appState = useAppState()
+
+  const stakedAmt = toHuman(
+    BigNumber.from(appState.stakedAmt), 6
+  ).toFixed(3);
+
+
   return (
     <div className="relative z-10 flex w-full flex-col items-center pb-10">
       <main className="mt-10 w-full max-w-7xl px-4 sm:mt-32 sm:px-6 lg:px-8">
@@ -42,9 +54,9 @@ export default function HomeSection() {
                     />
                     <p className="font-bold text-gray-300">KART</p>
                   </div>
-                  <button className="rounded-lg bg-purple px-7 py-1 text-white">
+                  <Link href="/staking" className="rounded-lg bg-purple px-7 py-1 text-white">
                     Stake
-                  </button>
+                  </Link>
                 </div>
                 <div className="flex flex-row justify-around w-full">
                   {KartPositions.map((item, index) => (
@@ -60,11 +72,10 @@ export default function HomeSection() {
               <div className="mt-2 flex w-full sm:mt-5 gap-2">
                 <div className="flex w-1/2 flex-col items-center rounded-lg border border-purple-border p-5">
                   <h2 className="pb-6 text-gray-300">Staked</h2>
-                  <p className="pb-2 font-semibold text-gray-300">0 KART</p>
-                  <p className="text-xs font-light text-gray-300">0 USDC</p>
-                  <button className="mt-6 w-full bg-purple p-2 text-white rounded-lg">
+                  <p className="pb-2 font-semibold text-gray-300">{stakedAmt} KART</p>
+                  <Link href="/staking" className="mt-6 w-full bg-purple p-2 text-white text-center rounded-lg">
                     Unstake
-                  </button>
+                  </Link>
                 </div>
                 <div className="flex w-1/2 flex-col items-center justify-between rounded-lg border border-purple-border p-5">
                   <h2 className="pb-6 text-gray-300">My Rewards</h2>
@@ -116,13 +127,13 @@ export default function HomeSection() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-[100px]">Timestamp</TableHead>
-                    <TableHead>Action</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Unstaking Period</TableHead>
-                    <TableHead>Release Date</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Finder</TableHead>
+                    <TableHead className="w-[100px] text-gray-300">Timestamp</TableHead>
+                    <TableHead className="text-gray-300">Action</TableHead>
+                    <TableHead className="text-gray-300">Amount</TableHead>
+                    <TableHead className="text-gray-300">Unstaking Period</TableHead>
+                    <TableHead className="text-gray-300">Release Date</TableHead>
+                    <TableHead className="text-gray-300">Status</TableHead>
+                    <TableHead className="text-right text-gray-300">Finder</TableHead>
                   </TableRow>
                 </TableHeader>
                 {/* <TableBody> */}

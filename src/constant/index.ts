@@ -1,8 +1,16 @@
+import { KART_DENOM, USK_DENOM } from "./token";
+
 type KartPosition = {
   label: string;
   value: number;
   unit?: string;
 };
+
+export interface IToken {
+  name: string;
+  src: string;
+  denom: string;
+}
 
 export const NavItems = [
   {
@@ -77,6 +85,10 @@ export const chartData = {
         },
       },
     },
+    grid: {
+      borderColor: '#b7b4b4a8',
+      strokeDashArray: 4,
+    },
   },
   series: [
     {
@@ -89,3 +101,16 @@ export const chartData = {
     },
   ],
 };
+
+export const token: Array<IToken> = [
+  {
+    name: "kart",
+    src: "/images/tokens/kart.png",
+    denom: KART_DENOM
+  },
+  {
+    name: "usk",
+    src: "/images/tokens/usk.png",
+    denom: USK_DENOM
+  },
+];
