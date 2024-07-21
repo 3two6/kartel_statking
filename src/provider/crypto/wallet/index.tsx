@@ -5,7 +5,6 @@ import {
   assertIsDeliverTxSuccess,
 } from "@cosmjs/stargate";
 import { ChainInfo } from "@keplr-wallet/types";
-import { DelegationResponse } from "cosmjs-types/cosmos/staking/v1beta1/staking";
 import { Any } from "cosmjs-types/google/protobuf/any";
 import { BigNumber } from "ethers";
 import {
@@ -59,9 +58,7 @@ export type IWallet = {
     msgs: EncodeObject[],
     memo?: string,
   ) => Promise<DeliverTxResponse>;
-  delegations: null | DelegationResponse[];
   refreshBalances: () => void;
-  refreshDelegations: () => void;
   feeDenom: string;
   setFeeDenom: (denom: string) => void;
   chainInfo: ChainInfo;
@@ -79,9 +76,7 @@ const Context = createContext<IWallet>({
   signAndBroadcast: async () => {
     throw new Error("Not Implemented");
   },
-  delegations: null,
   refreshBalances: () => { },
-  refreshDelegations: () => { },
   feeDenom: "ukuji",
   setFeeDenom: () => { },
   chainInfo: {} as ChainInfo,
@@ -123,10 +118,6 @@ export const WalletContext: FC<PropsWithChildren> = ({ children }) => {
   const [{ network, chainInfo, query, rpc }] = useNetwork();
 
   const [kujiraAccount, setKujiraAccount] = useState<null | Any>(null);
-
-  const [delegations, setDelegations] = useState<null | DelegationResponse[]>(
-    null,
-  );
 
   useEffect(() => {
     stored && connect(stored, network, true);
@@ -171,20 +162,7 @@ export const WalletContext: FC<PropsWithChildren> = ({ children }) => {
       .then((account) => account && setKujiraAccount(account));
   }, [wallet, query]);
 
-  const refreshDelegations = () => {
-    if (!wallet) return;
-    setDelegations(null);
-    query?.staking
-      .delegatorDelegations(wallet.account.address)
-      .then(
-        ({ delegationResponses }) =>
-          delegationResponses && setDelegations(delegationResponses),
-      );
-  };
 
-  useEffect(() => {
-    refreshDelegations();
-  }, [wallet, query]);
 
   const balance = (denom: Denom): BigNumber =>
     balances[denom.reference] || BigNumber.from(0);
@@ -324,7 +302,6 @@ export const WalletContext: FC<PropsWithChildren> = ({ children }) => {
   const value: IWallet = {
     adapter,
     account: wallet?.account || null,
-    delegations,
     connect,
     disconnect,
     kujiraAccount,
@@ -333,7 +310,6 @@ export const WalletContext: FC<PropsWithChildren> = ({ children }) => {
     balance,
     signAndBroadcast: (msgs, memo) => signAndBroadcast(rpc, msgs, memo),
     refreshBalances,
-    refreshDelegations,
     feeDenom,
     setFeeDenom,
     chainInfo,

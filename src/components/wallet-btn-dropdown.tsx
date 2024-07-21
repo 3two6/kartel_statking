@@ -13,6 +13,7 @@ import {
     Copy,
     LogOut,
 } from "lucide-react";
+import useToast from "@/hooks/use-toast";
 
 function truncateAddress(address: string) {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -20,7 +21,7 @@ function truncateAddress(address: string) {
 
 export default function WalletBtnDropdown() {
     const { disconnect, account } = useWallet();
-
+    const toast = useToast();
     const handleCopyAddress = () => {
         if (account?.address) {
             navigator.clipboard.writeText(account.address);
@@ -28,7 +29,10 @@ export default function WalletBtnDropdown() {
     };
 
     const handleDisconnect = () => {
-        disconnect();
+        if (account) {
+            disconnect();
+            toast.success("Wallet Disconnected")
+        }
     };
 
     return (
