@@ -28,10 +28,15 @@ export default function RootLayout({
       <head>
         <link
           href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&amp;family=Barlow+Semi+Condensed:wght@300;400;500&amp;display=swap"
-          rel="stylesheet" />
-        <link rel="stylesheet" type="text/css" href="https://srv.fontget.com/font/woff?font=33260" />
+          rel="stylesheet"
+        />
+        <link
+          rel="stylesheet"
+          type="text/css"
+          href="https://srv.fontget.com/font/woff?font=33260"
+        />
         <link rel="icon" href="/favicon/favicon.ico" />
-        <title>Kart Staking</title>
+        <title>KART STAKING</title>
       </head>
       <body className={inter.className}>
         <AppProvider>

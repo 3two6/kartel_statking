@@ -1,5 +1,3 @@
-
-
 import Footer from "./footer";
 import Header from "./header";
 import { ReactNode, useEffect } from "react";
@@ -9,11 +7,10 @@ import { useNetwork } from "@/provider/crypto/network";
 import { useWallet } from "@/provider/crypto/wallet";
 
 export default function AppLayouts({ children }: { children: ReactNode }) {
+  const { getAppInfo, getUserInfo } = useAppActions();
 
-  const { getAppInfo, getUserInfo } = useAppActions()
-
-  const [{ query }] = useNetwork()
-  const { account } = useWallet()
+  const [{ query }] = useNetwork();
+  const { account } = useWallet();
 
   useEffect(() => {
     if (query) {
@@ -25,7 +22,6 @@ export default function AppLayouts({ children }: { children: ReactNode }) {
   }, [account, query]);
 
   return (
-
     <div className="h-screen flex flex-col bg-opacity-90 bg-gradient-to-b from-dark to-dark bg-blend-multiply">
       <Header />
       <div className="relative w-full grow overflow-y-auto">
@@ -33,6 +29,5 @@ export default function AppLayouts({ children }: { children: ReactNode }) {
       </div>
       <Footer />
     </div>
-
   );
 }

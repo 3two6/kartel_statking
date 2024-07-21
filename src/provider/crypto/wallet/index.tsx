@@ -69,16 +69,16 @@ const Context = createContext<IWallet>({
   account: null,
   getBalance: async () => BigNumber.from(0),
   balance: () => BigNumber.from(0),
-  connect: async () => { },
-  disconnect: () => { },
+  connect: async () => {},
+  disconnect: () => {},
   kujiraAccount: null,
   balances: [],
   signAndBroadcast: async () => {
     throw new Error("Not Implemented");
   },
-  refreshBalances: () => { },
+  refreshBalances: () => {},
   feeDenom: "ukuji",
-  setFeeDenom: () => { },
+  setFeeDenom: () => {},
   chainInfo: {} as ChainInfo,
   adapter: null,
 });
@@ -140,9 +140,9 @@ export const WalletContext: FC<PropsWithChildren> = ({ children }) => {
           setBalances((prev) =>
             b.denom
               ? {
-                ...prev,
-                [b.denom]: BigNumber.from(b.amount),
-              }
+                  ...prev,
+                  [b.denom]: BigNumber.from(b.amount),
+                }
               : prev,
           );
         });
@@ -161,8 +161,6 @@ export const WalletContext: FC<PropsWithChildren> = ({ children }) => {
       .account(wallet.account.address)
       .then((account) => account && setKujiraAccount(account));
   }, [wallet, query]);
-
-
 
   const balance = (denom: Denom): BigNumber =>
     balances[denom.reference] || BigNumber.from(0);
