@@ -37,6 +37,25 @@ export default function RootLayout({
         />
         <link rel="icon" href="/favicon/favicon.ico" />
         <title>KART STAKING</title>
+        <meta name="description"
+          content="Discover Kart Staking's comprehensive blockchain and staking solutions. Secure your assets, maximize rewards, and explore innovative tools tailored for your needs." />
+
+        <meta property="og:url" content="https://kartel-staking.vercel.app" />
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="Kart Staking" />
+        <meta property="og:description"
+          content="Discover Kart Staking's comprehensive blockchain and staking solutions. Secure your assets, maximize rewards, and explore innovative tools tailored for your needs." />
+        <meta property="og:image" content="https://i.ibb.co/rHWfFL6/kart-staking.jpg" />
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta property="twitter:domain" content="kartel-staking.vercel.app" />
+        <meta property="twitter:url" content="https://kartel-staking.vercel.app" />
+        <meta name="twitter:title" content="Kart Staking" />
+        <meta name="twitter:description"
+          content="Discover Kart Staking's comprehensive blockchain and staking solutions. Secure your assets, maximize rewards, and explore innovative tools tailored for your needs." />
+        <meta name="twitter:image" content="https://i.ibb.co/rHWfFL6/kart-staking.jpg" />
+        <meta property="telegram:image" content="https://i.ibb.co/rHWfFL6/kart-staking.jpg" />
+
       </head>
       <body className={inter.className}>
         <AppProvider>
