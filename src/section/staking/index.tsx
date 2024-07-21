@@ -2,14 +2,71 @@
 
 import { KartCard } from "@/components/card";
 import { Input } from "@/components/ui/input";
-import { StakingOptions } from "@/constant";
+import { StakingOptions } from "../../constant";
+import { useAppActions, useAppState } from "@/store/app.store";
+import { toHuman } from "kujira.js";
 import Image from "next/image";
 import { useState } from "react";
+import { BigNumber } from "@ethersproject/bignumber";
+import { useNetwork } from "@/provider/crypto/network";
+import { useWallet } from "@/provider/crypto/wallet";
+import useToast from "@/hooks/use-toast";
 
 export default function StakingSection() {
   const [selectedOption, setSelectedOption] = useState<string>(
     StakingOptions[0].value,
   );
+
+  const [{ query }] = useNetwork();
+
+  const { account, signAndBroadcast } = useWallet();
+
+  const appState = useAppState();
+  const { bond, unbond } = useAppActions();
+
+  const toast = useToast();
+
+  const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(
+    2,
+  );
+
+  const handleStake = async () => {
+    if (!account) {
+      // toast.error("Connect your wallet");
+      return;
+    }
+
+    if (!query) {
+      // toast.error("Network Error");
+      return;
+    }
+
+    try {
+      await bond(100, account.address, signAndBroadcast, query);
+      // toast.success("Stake KART success");
+    } catch (err) {
+      // toast.error("User rejected transaction");
+    }
+  };
+
+  const handleUnstake = async () => {
+    if (!account) {
+      // toast.error("Connect your wallet");
+      return;
+    }
+
+    if (!query) {
+      // toast.error("Network Error");
+      return;
+    }
+
+    try {
+      await unbond(10, account.address, signAndBroadcast, query);
+      // toast.success("Stake KART success");
+    } catch (err) {
+      // toast.error("User rejected transaction");
+    }
+  };
 
   return (
     <div className="relative z-10 flex w-full flex-col items-center px-4 py-5 sm:px-6 sm:pt-0 lg:px-8">
@@ -61,7 +118,7 @@ export default function StakingSection() {
         <div className="flex w-full flex-col items-center">
           <div className="flex w-full items-center gap-x-2">
             <span className="text-xs font-light text-gray-300">Available</span>
-            <span className="text-xs text-gray-300">0 KART</span>
+            <span className="text-xs text-gray-300">{kartBalance} KART</span>
           </div>
           <div className="w-full text-lg">
             <div className="mt-2 flex items-center rounded-sm bg-transparent px-4 py-2 shadow-sm border border-purple-border">
@@ -97,6 +154,11 @@ export default function StakingSection() {
         </div>
         <button
           className={`bg-purple border w-full rounded py-3 text-gray-300 transition-all duration-100 ease-in-out ${selectedOption === StakingOptions[0].value ? "bg-purple border-transparent" : "bg-transparent border-purple-border"}`}
+          onClick={
+            selectedOption === StakingOptions[0].value
+              ? handleStake
+              : handleUnstake
+          }
         >
           {selectedOption === StakingOptions[0].value ? "Stake" : "Unstake"}
         </button>
