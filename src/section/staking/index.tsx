@@ -70,7 +70,10 @@ export default function StakingSection() {
 
   return (
     <div className="relative z-10 flex w-full flex-col items-center px-4 py-5 sm:px-6 sm:pt-0 lg:px-8">
-      <main className="mx-auto hidden w-full max-w-7xl flex-col sm:mt-24 sm:flex">
+      <main className="relative mx-auto hidden w-full max-w-7xl flex-col sm:mt-24 sm:flex">
+        <div className="absolute z-20 flex h-full w-full items-center justify-center backdrop-blur-lg">
+          <p className="text-center text-2xl font-bold text-white">Coming Soon</p>
+        </div>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
           <KartCard>
             <h3 className="font-normal text-gray-300">Market Cap</h3>
@@ -147,7 +150,7 @@ export default function StakingSection() {
             {selectedOption === StakingOptions[1].value && (
               <>
                 <div className="text-gray-300">Unstaking Period</div>
-                <div className="text-purple">14 Days</div>
+                <div className="text-purple">10 Days</div>
               </>
             )}
           </div>
