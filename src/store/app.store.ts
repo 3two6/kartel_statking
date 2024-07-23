@@ -1,11 +1,10 @@
-import { KART_DENOM, STAKING_ADDR } from "@/constant/token";
+import { KART_DENOM, REWARDS_ADDR, STAKING_ADDR } from "@/constant/token";
 import { TAppState, TAppStore } from "@/types/store";
 import { fin, fromHumanString, msg, toHuman } from "kujira.js";
 import { create } from "zustand";
 
 import { BigNumber } from "@ethersproject/bignumber";
 import { coin } from "@cosmjs/proto-signing";
-import { STAKING } from "kujira.js/lib/cjs/fin";
 
 const initialState: TAppState = {
   kujiBalance: 0,
@@ -117,9 +116,34 @@ const useAppStore = create<TAppStore>((set, get) => {
         }
       },
 
-      async claim() {},
+      async claim() { },
 
-      async unlock() {},
+      async unlock() { },
+
+      async addReward(amount, denom, schedule, sender, sign, query) {
+        get().actions.setLoading(true);
+
+        try {
+          const executeMsg = msg.wasm.msgExecuteContract({
+            contract: REWARDS_ADDR,
+            sender: sender,
+            msg: Buffer.from(JSON.stringify({ add_incentive: { denom, schedule } })),
+            funds: [
+              coin(fromHumanString(String(amount), 6).toNumber(), denom),
+            ],
+          });
+
+          const tx = await sign([executeMsg], "Add Rewards");
+
+          await get().actions.getUserInfo(sender, query);
+          await get().actions.getAppInfo(query);
+        } catch (err) {
+          console.log(err);
+          get().actions.setLoading(false);
+        } finally {
+          get().actions.setLoading(false);
+        }
+      },
 
       setLoading(status: boolean) {
         set({
