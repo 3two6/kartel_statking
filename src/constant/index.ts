@@ -23,11 +23,6 @@ export const NavItems = [
   },
 ];
 
-export const Kartprices = [
-  { label: "Rewards earned daily", value: "0 USD" },
-  { label: "KART price", value: "0.032 USDC" },
-];
-
 export const KartPositions: KartPosition[] = [
   { label: "Staking APR", value: 28.48, unit: "%" },
   { label: "Available", value: 0 },
