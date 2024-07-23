@@ -14,22 +14,25 @@ import useToast from "@/hooks/use-toast";
 import { useAppState } from "@/store/app.store";
 import { BigNumber } from "ethers";
 import { toHuman } from "kujira.js";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
 
 export default function RewardsSection() {
+
+
   const appState = useAppState();
   const toast = useToast();
   const [selectedToken, setSelectedToken] = useState(token[0]);
+  const [month, setMonth] = useState<number>(1);
+  const [amount, setAmount] = useState(0);
 
   const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(
     2,
@@ -38,6 +41,11 @@ export default function RewardsSection() {
   const handleRewards = async () => {
     console.log("handle rewards");
   };
+
+  const handleSetDuration = (value: string) => {
+    setMonth(Number(value));
+  }
+
   return (
     <div className="relative z-10 flex w-full flex-col items-center justify-center px-4 py-5 sm:px-6 sm:pt-0 lg:px-8 sm:mt-24">
       <KartCard className="my-10 flex w-full max-w-lg flex-col items-start gap-y-8 p-8 drop-shadow-16 sm:mb-0">
@@ -46,8 +54,8 @@ export default function RewardsSection() {
           Choose the token and amount you want to deposit as a reward.
         </p>
         <div className="flex w-full flex-col items-center">
-          <div className="flex flex-col w-full gap-2">
-            <span className="text-xs font-light text-gray-300">Available</span>
+          <div className="flex flex-row w-full gap-2">
+            <span className="text-xs font-light text-gray-300">Available : </span>
             <span className="text-xs text-gray-300">{kartBalance} KART</span>
           </div>
           <div className="w-full text-lg">
@@ -68,6 +76,7 @@ export default function RewardsSection() {
                       </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-12 border-purple-0.5 bg-[#0D0B32CC]">
+
                       <DropdownMenuRadioGroup
                         value={selectedToken.name}
                         onValueChange={(value) => {
@@ -109,7 +118,7 @@ export default function RewardsSection() {
           <p className="text-gray-300 text-base">
             Select the distribution period for the tokens in months.
           </p>
-          <Select>
+          <Select onValueChange={handleSetDuration} >
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Select period" />
             </SelectTrigger>
