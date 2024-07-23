@@ -43,7 +43,12 @@ export default function StakingSection() {
       return;
     }
 
-    if ((parseFloat(amount) > parseFloat(avaliableBalance)) || (parseFloat(amount) <= 0)) {
+    if ((parseFloat(amount) <= 0)) {
+      toast.error("Invalid amount");
+      return;
+    }
+
+    if ((parseFloat(amount) > parseFloat(avaliableBalance))) {
       toast.error("Insufficient balance to stake");
       return;
     }
@@ -66,7 +71,12 @@ export default function StakingSection() {
       return;
     }
 
-    if ((parseFloat(amount) > parseFloat(avaliableBalance)) || (parseFloat(amount) <= 0)) {
+    if ((parseFloat(amount) <= 0)) {
+      toast.error("Invalid amount");
+      return;
+    }
+
+    if ((parseFloat(amount) > parseFloat(avaliableBalance))) {
       toast.error("Insufficient balance to unstake");
       return;
     }

@@ -71,6 +71,8 @@ const useAppStore = create<TAppStore>((set, get) => {
             .queryContractSmart(STAKING_ADDR, { claims: { address: owner } })
             .then((x) => x?.claims ?? []);
 
+          console.log("claims", claims)
+
           const rewards = await query.wasm.queryContractSmart(
             REWARDS_ADDR, { pending_rewards: { staker: owner } }
           ).then((x: { rewards: Array<{ denom: string, amount: string }> }) => {
