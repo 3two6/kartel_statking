@@ -1,10 +1,5 @@
 import { KART_DENOM, USK_DENOM } from "./token";
 
-type KartPosition = {
-  label: string;
-  value: number;
-  unit?: string;
-};
 
 export interface IToken {
   name: string;
@@ -23,17 +18,6 @@ export const NavItems = [
   },
 ];
 
-export const KartPositions: KartPosition[] = [
-  { label: "Staking APR", value: 28.48, unit: "%" },
-  { label: "Available", value: 0 },
-];
-
-export const Stakings = [
-  { label: "Market Cap", value: 4807737, unit: "$" },
-  { label: "Circulating Supply", value: 151606080, unit: "kart" },
-  { label: "Staking APR", value: 28.48, unit: "%" },
-  { label: "KART Price", value: 0.032, unit: "USDC" },
-];
 
 export const StakingOptions = [
   { label: "Stake", value: "stake" },
