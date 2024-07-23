@@ -1,3 +1,4 @@
+import { IStakingModel } from "@/lib/service/staking.type";
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { DeliverTxResponse } from "@cosmjs/stargate";
 import { KujiraQueryClient } from "kujira.js";
@@ -21,8 +22,9 @@ export type TAppState = {
   kartPrice: number;
   stakedAmt: number;
   rewards: { uskReward: number, kartReward: number };
-  claims: Array<{ amount: string; release_at: number }>;
+  claims: Array<{ amount: string; release_at: string }>;
   totalStaked: number;
+  activity: Array<Partial<IStakingModel>>;
   loading: boolean;
 };
 
