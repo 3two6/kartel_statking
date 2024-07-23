@@ -14,7 +14,7 @@ import useToast from "@/hooks/use-toast";
 import { useAppActions, useAppState } from "@/store/app.store";
 import { BigNumber } from "ethers";
 import { fromHumanString, toHuman } from "kujira.js";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Select,
   SelectContent,

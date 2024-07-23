@@ -14,7 +14,7 @@ const initialState: TAppState = {
   uskBalance: 0,
   kartPrice: 0,
   stakedAmt: 0,
-  rewards: 0,
+  rewards: { uskReward: 0, kartReward: 0 },
   claims: [],
   loading: false,
 };
@@ -25,6 +25,14 @@ const useAppStore = create<TAppStore>((set, get) => {
     actions: {
       async getAppInfo(query) {
         get().actions.setLoading(true);
+
+        try {
+        } catch (err) {
+          console.log(err)
+        } finally {
+          get().actions.setLoading(true);
+
+        }
       },
 
       async initializeAppInfo() {
@@ -63,18 +71,34 @@ const useAppStore = create<TAppStore>((set, get) => {
             .queryContractSmart(STAKING_ADDR, { claims: { address: owner } })
             .then((x) => x?.claims ?? []);
 
+          const rewards = await query.wasm.queryContractSmart(
+            REWARDS_ADDR, { pending_rewards: { staker: owner } }
+          ).then((x: { rewards: Array<{ denom: string, amount: string }> }) => {
+            let kartReward = 0, uskReward = 0;
+            if (x.rewards.length > 0) {
+              x.rewards.map((reward) => {
+                if (reward.denom === USK_DENOM)
+                  uskReward = Number(toHuman(BigNumber.from(reward.amount), 6).toFixed(3))
+                else if (reward.denom === KART_DENOM)
+                  kartReward = Number(toHuman(BigNumber.from(reward.amount), 6).toFixed(3))
+              })
+            }
+            return { kartReward, uskReward }
+          })
+
           set({
             app: {
               ...get().app,
               kujiBalance: Number(toHuman(BigNumber.from(kujiBalance ?? 0), 6)),
               kartBalance: Number(kartBalance ?? 0),
+              uskBalance: Number(uskBalance ?? 0),
               stakedAmt: stakedAmt?.stake ?? 0,
+              rewards: rewards,
               claims,
             },
           });
         } catch (err) {
           console.error(err);
-          get().actions.setLoading(false);
         } finally {
           get().actions.setLoading(false);
         }
@@ -97,17 +121,15 @@ const useAppStore = create<TAppStore>((set, get) => {
 
           await get().actions.getUserInfo(sender, query);
           await get().actions.getAppInfo(query);
-          const res = await stakingApiService.stakeToken({
+          await stakingApiService.stakeToken({
             address: sender,
             amount: amount,
             txHash: tx.transactionHash,
             txDate: new Date(),
             txType: ETXTYPE.STAKE
           })
-          console.log({ res })
         } catch (err) {
           console.error(err);
-          get().actions.setLoading(false);
           throw err;
         } finally {
           get().actions.setLoading(false);
@@ -135,26 +157,64 @@ const useAppStore = create<TAppStore>((set, get) => {
 
           await get().actions.getUserInfo(sender, query);
           await get().actions.getAppInfo(query);
-          const res = await stakingApiService.stakeToken({
+          await stakingApiService.stakeToken({
             address: sender,
             amount: amount,
             txHash: tx.transactionHash,
             txDate: new Date(),
             txType: ETXTYPE.UNSTAKE
           })
-          console.log({ res })
         } catch (err) {
           console.error(err);
-          get().actions.setLoading(false);
           throw err;
         } finally {
           get().actions.setLoading(false);
         }
       },
 
-      async claim() { },
+      async claim(sender, sign, query) {
+        get().actions.setLoading(true);
 
-      async unlock() { },
+        try {
+          const executeMsg = msg.wasm.msgExecuteContract({
+            contract: STAKING_ADDR,
+            sender: sender,
+            msg: Buffer.from(JSON.stringify({ claim: {} })),
+            funds: [],
+          });
+
+          const tx = await sign([executeMsg], "Claim unstake");
+
+          await get().actions.getUserInfo(sender, query);
+          await get().actions.getAppInfo(query);
+        } catch (err) {
+          console.log(err);
+        } finally {
+          get().actions.setLoading(false);
+        }
+      },
+
+      async withdraw(sender, sign, query) {
+        get().actions.setLoading(true);
+
+        try {
+          const executeMsg = msg.wasm.msgExecuteContract({
+            contract: REWARDS_ADDR,
+            sender: sender,
+            msg: Buffer.from(JSON.stringify({ claim_rewards: {} })),
+            funds: [],
+          });
+
+          const tx = await sign([executeMsg], "Claim Rewards");
+
+          await get().actions.getUserInfo(sender, query);
+          await get().actions.getAppInfo(query);
+        } catch (err) {
+          console.log(err);
+        } finally {
+          get().actions.setLoading(false);
+        }
+      },
 
       async addReward(amount, denom, schedule, sender, sign, query) {
         get().actions.setLoading(true);
@@ -175,7 +235,6 @@ const useAppStore = create<TAppStore>((set, get) => {
           await get().actions.getAppInfo(query);
         } catch (err) {
           console.log(err);
-          get().actions.setLoading(false);
         } finally {
           get().actions.setLoading(false);
         }

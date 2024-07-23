@@ -22,6 +22,7 @@ export const NavItems = [
 export const StakingOptions = [
   { label: "Stake", value: "stake" },
   { label: "Unstake", value: "unstake" },
+  { label: "Claim", value: "claim" }
 ];
 
 export const SocialLinks = [
