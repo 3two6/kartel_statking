@@ -6,7 +6,7 @@ import { StakingOptions } from "../../constant";
 import { useAppActions, useAppState } from "@/store/app.store";
 import { toHuman } from "kujira.js";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BigNumber } from "@ethersproject/bignumber";
 import { useNetwork } from "@/provider/crypto/network";
 import { useWallet } from "@/provider/crypto/wallet";
@@ -103,11 +103,6 @@ export default function StakingSection() {
     }
   };
 
-  useEffect(() => {
-    if (account && query) {
-      getUserInfo(account.address, query);
-    }
-  }, [selectedOption]);
 
   return (
     <div className="relative z-10 flex w-full flex-col items-center px-4 py-5 sm:px-6 sm:pt-0 lg:px-8">

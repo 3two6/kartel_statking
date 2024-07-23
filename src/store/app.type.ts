@@ -22,6 +22,7 @@ export type TAppState = {
   stakedAmt: number;
   rewards: { uskReward: number, kartReward: number };
   claims: Array<{ amount: string; release_at: number }>;
+  totalStaked: number;
   loading: boolean;
 };
 

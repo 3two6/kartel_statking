@@ -104,9 +104,11 @@ export const CBACKEND_ENDPOINT = {
     base: "/staking",
     create: "/staking/create",
     history: "/staking/history",
+    userActivity: "/staking/user",
   },
-  dashboard: {
-    base: "/dashboard",
-    kartCurrency: "/dashboard/kart-currency",
-  },
+  trait: {
+    base: "/trait",
+    kartCurrency: "/trait/kart/currency",
+    totalStake: "/trait/kart/total-stake",
+  }
 };

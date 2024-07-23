@@ -13,7 +13,7 @@ import { useAppActions, useAppState } from "@/store/app.store";
 import { toHuman } from "kujira.js";
 import { BigNumber } from "@ethersproject/bignumber";
 import Link from "next/link";
-import { stakingApiService } from "@/lib/service";
+import { stakingApiService, traitApiService } from "@/lib/service";
 import { useWallet } from "@/provider/crypto/wallet";
 import { useNetwork } from "@/provider/crypto/network";
 import useToast from "@/hooks/use-toast";
@@ -44,6 +44,7 @@ export default function HomeSection() {
         setChartXData(resStakeHistory?.xData)
         setChartYData(resStakeHistory?.yData)
       }
+
 
     } catch (error) {
       console.error(error)
@@ -89,7 +90,7 @@ export default function HomeSection() {
             </KartCard>
             <KartCard>
               <h1 className="font-light text-gray-300">KART Price</h1>
-              <p className="pt-3 text-lg text-gray-300">{0} USDC</p>
+              <p className="pt-3 text-lg text-gray-300">{appState.kartPrice} USDC</p>
             </KartCard>
           </div>
           <div className="lg:col-span-2">
@@ -119,7 +120,7 @@ export default function HomeSection() {
                   <div className="flex flex-col items-center">
                     <p className="text-gray-300 font-light">Staking APR</p>
                     <p className="text-sm font-semibold text-gray-300">
-                      12.6 %
+                      12.64 %
                     </p>
                   </div>
                   <div className="flex flex-col items-center">
