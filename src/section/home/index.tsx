@@ -5,7 +5,6 @@ import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Chart from "react-apexcharts";
 import {
   EFilterDate,
-  KartPositions,
   chartData,
 } from "../../constant";
 import Image from "next/image";
@@ -21,6 +20,11 @@ export default function HomeSection() {
   const [kartPrice, setKartPrice] = useState(0);
   const appState = useAppState();
   const stakedAmt = toHuman(BigNumber.from(appState.stakedAmt), 6).toFixed(3);
+
+  const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(
+    3,
+  );
+
 
   return (
     <div className="relative z-10 flex w-full flex-col items-center pb-10">
@@ -63,13 +67,13 @@ export default function HomeSection() {
                   <div className="flex flex-col items-center">
                     <p className="text-gray-300 font-light">Staking APR</p>
                     <p className="text-sm font-semibold text-gray-300">
-                      0%
+                      12.6 %
                     </p>
                   </div>
                   <div className="flex flex-col items-center">
                     <p className="text-gray-300 font-light">Available</p>
                     <p className="text-sm font-semibold text-gray-300">
-                      0
+                      {kartBalance}
                     </p>
                   </div>
                 </div>

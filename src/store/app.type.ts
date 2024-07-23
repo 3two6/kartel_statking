@@ -17,6 +17,7 @@ export type Schedule = {
 export type TAppState = {
   kujiBalance: number;
   kartBalance: number;
+  uskBalance: number;
   kartPrice: number;
   stakedAmt: number;
   rewards: number;

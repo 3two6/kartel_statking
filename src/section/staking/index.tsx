@@ -11,14 +11,12 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { useNetwork } from "@/provider/crypto/network";
 import { useWallet } from "@/provider/crypto/wallet";
 import useToast from "@/hooks/use-toast";
-import LoadingIcon from "@/components/loading-icon";
 
 export default function StakingSection() {
   const [selectedOption, setSelectedOption] = useState<string>(
     StakingOptions[0].value,
   );
   const [amount, setAmount] = useState("0");
-  const [isLoading, setIsLoading] = useState(false);
 
   const [{ query }] = useNetwork();
 
@@ -49,12 +47,9 @@ export default function StakingSection() {
       return;
     }
     try {
-      setIsLoading(true);
       await bond(parseFloat(amount), account.address, signAndBroadcast, query);
       toast.success("Stake KART success");
-      setIsLoading(false);
     } catch (err) {
-      setIsLoading(false);
       toast.error("User rejected transaction");
     }
   };
@@ -76,12 +71,9 @@ export default function StakingSection() {
     }
 
     try {
-      setIsLoading(true);
       await unbond(parseFloat(amount), account.address, signAndBroadcast, query);
       toast.success("Unstake KART success");
-      setIsLoading(false);
     } catch (err) {
-      setIsLoading(false);
       toast.error("User rejected transaction");
     }
   };
@@ -123,7 +115,7 @@ export default function StakingSection() {
           </KartCard>
           <KartCard>
             <h3 className="font-normal text-gray-300">Staking APR</h3>
-            <div className="text-gray-300">28.48%</div>
+            <div className="text-gray-300">12.6 %</div>
           </KartCard>
           <KartCard>
             <h3 className="font-normal text-gray-300">KART Price</h3>
@@ -209,9 +201,8 @@ export default function StakingSection() {
               ? handleStake
               : handleUnstake
           }
-          disabled={isLoading}
         >
-          {selectedOption === StakingOptions[0].value ? "Stake" : "Unstake"}{isLoading && <LoadingIcon />}
+          {selectedOption === StakingOptions[0].value ? "Stake" : "Unstake"}
         </button>
       </KartCard>
       <main className="mx-auto flex w-full max-w-7xl flex-col sm:mt-32 sm:hidden">
@@ -226,7 +217,7 @@ export default function StakingSection() {
           </KartCard>
           <KartCard>
             <h3 className="font-normal text-gray-300">Staking APR</h3>
-            <div className="text-gray-300">28.48%</div>
+            <div className="text-gray-300">12.6 %</div>
           </KartCard>
           <KartCard>
             <h3 className="font-normal text-gray-300">KART Price</h3>
@@ -234,8 +225,10 @@ export default function StakingSection() {
           </KartCard>
           <KartCard className="gap-3">
             <div className="flex w-full flex-col items-center gap-y-2 sm:items-start">
-              <h3 className="font-normal text-gray-300">Staking Ratio</h3>
-              <div className="text-gray-300">13.07%</div>
+              <div>
+                <h3 className="font-normal text-gray-300">Staking Ratio</h3>
+                <div className="text-gray-300">13.07%</div>
+              </div>
               <div className="text-sm font-light text-gray-300">
                 19,822,172.065 staked
               </div>
