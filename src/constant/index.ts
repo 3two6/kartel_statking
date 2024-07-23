@@ -113,3 +113,5 @@ export const CBACKEND_ENDPOINT = {
     totalStake: "/trait/kart/total-stake",
   }
 };
+
+export const kujirafinderTxHashUrl = "https://finder.kujira.network/harpoon-4/tx/";
