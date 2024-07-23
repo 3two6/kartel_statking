@@ -1,4 +1,4 @@
-import { KART_DENOM, REWARDS_ADDR, STAKING_ADDR } from "@/constant/token";
+import { KART_DENOM, REWARDS_ADDR, STAKING_ADDR, USK_DENOM } from "@/constant/token";
 import { TAppState, TAppStore } from "./app.type";
 import { fromHumanString, msg, toHuman } from "kujira.js";
 import { create } from "zustand";
@@ -11,6 +11,7 @@ import { ETXTYPE } from "@/constant/stake";
 const initialState: TAppState = {
   kujiBalance: 0,
   kartBalance: 0,
+  uskBalance: 0,
   kartPrice: 0,
   stakedAmt: 0,
   rewards: 0,
@@ -44,12 +45,13 @@ const useAppStore = create<TAppStore>((set, get) => {
         }
 
         try {
-          let kujiBalance, kartBalance;
+          let kujiBalance, kartBalance, uskBalance;
 
           await query.bank.allBalances(owner).then((x) => {
             x?.map((b) => {
               if (b.denom === "ukuji") kujiBalance = b.amount;
               if (b.denom === KART_DENOM) kartBalance = b.amount;
+              if (b.denom === USK_DENOM) uskBalance = b.amount;
             });
           });
 
