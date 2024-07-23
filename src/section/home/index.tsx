@@ -18,7 +18,7 @@ import { useWallet } from "@/provider/crypto/wallet";
 import { useNetwork } from "@/provider/crypto/network";
 import useToast from "@/hooks/use-toast";
 import { ETXTYPE } from "@/constant/stake";
-import { addDaysToTimestamp } from "@/lib/utils";
+import { addDaysToTimestamp, formatTimeStamp, formatTxHash } from "@/lib/utils";
 
 export default function HomeSection() {
   const [chartTimeStep, setChartTimeStep] = useState(EFilterDate.week);
@@ -206,12 +206,12 @@ export default function HomeSection() {
               <Table>
                 <TableHeader>
                   <TableRow className="whitespace-nowrap">
-                    <TableHead className="w-[100px] text-gray-300">
+                    <TableHead className="text-gray-300">
                       Timestamp
                     </TableHead>
                     <TableHead className="text-gray-300">Action</TableHead>
                     <TableHead className="text-gray-300">Amount</TableHead>
-                    <TableHead className="text-gray-300">
+                    <TableHead className="text-gray-300 text-center">
                       Unstaking Period
                     </TableHead>
                     <TableHead className="text-gray-300">
@@ -226,15 +226,17 @@ export default function HomeSection() {
                 <TableBody>
                   {appState.activity.length > 0 && appState.activity.map((item, index) => (
                     <TableRow key={index} className="text-white">
-                      <TableCell className="text-gray-400 text-sm">{item.txDate?.toString() ?? "-"}</TableCell>
-                      <TableCell className="text-gray-400 text-sm">{item.txType ?? "-"}</TableCell>
-                      <TableCell className="text-gray-400 text-sm">{item.amount ?? "-"}</TableCell>
-                      <TableCell className="text-center">{item.txType === ETXTYPE.UNSTAKE && "14 Days"}</TableCell>
-                      <TableCell className="text-left">{item.txType === ETXTYPE.UNSTAKE && addDaysToTimestamp(item.txDate?.toString() ?? "-", 14)}</TableCell>
-                      <TableCell className="text-right text-green">success</TableCell>
-                      <TableCell className="flex text-left max-w-56 items-center h-full">
+                      <TableCell className="text-[#90a4ae] text-sm">{formatTimeStamp(item.txDate?.toString() ?? "-")}</TableCell>
+                      <TableCell className="text-gray-300 text-sm">{item.txType ?? "-"}</TableCell>
+                      <TableCell className="text-gray-300 text-sm">{item.amount ?? "-"}</TableCell>
+                      <TableCell className="text-center text-gray-300">{item.txType === ETXTYPE.UNSTAKE && "14 Days"}</TableCell>
+                      <TableCell className="text-left text-[#90a4ae]">{item.txType === ETXTYPE.UNSTAKE && formatTimeStamp(addDaysToTimestamp(item.txDate?.toString() ?? "-", 14))}</TableCell>
+                      <TableCell className="text-right text-green">
+                        <div className="flex rounded-full items-center justify-center border border-[#00c853] bg-[#00c8531a] text-[#00c853] text-xs px-0 py-0.5">success</div>
+                      </TableCell>
+                      <TableCell className="flex text-left max-w-64 items-center h-full">
                         <Link href={`https://finder.kujira.network/harpoon-4/tx/${item.txHash}`} target="_blank" className="truncate text-sm">
-                          {item.txHash ?? '-'}
+                          {formatTxHash(item.txHash ?? '-')}
                         </Link>
                       </TableCell>
                     </TableRow>

@@ -43,7 +43,7 @@ const useAppStore = create<TAppStore>((set, get) => {
         } catch (err) {
           console.log(err)
         } finally {
-          get().actions.setLoading(true);
+          get().actions.setLoading(false);
 
         }
       },
