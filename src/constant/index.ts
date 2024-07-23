@@ -60,11 +60,11 @@ export const SocialLinks = [
   },
 ];
 
-export const PortfolioDayOptions = [
-  { label: "7d", value: 7 },
-  { label: "30d", value: 14 },
-  { label: "1Y", value: 365 },
-];
+export enum EFilterDate {
+  week = "7d",
+  month = "30d",
+  year = "1Y",
+}
 
 export const chartData = {
   options: {
@@ -119,3 +119,14 @@ export const token: Array<IToken> = [
     denom: USK_DENOM,
   },
 ];
+
+export const CBACKEND_ENDPOINT = {
+  staking: {
+    base: "/staking",
+    create: "/staking/create",
+  },
+  dashboard: {
+    base: "/dashboard",
+    kartCurrency: "/dashboard/kart-currency",
+  },
+};
