@@ -7,6 +7,13 @@ export type TSignAndBroadcastFn = (
   memo?: string,
 ) => Promise<DeliverTxResponse>;
 
+export type Schedule = {
+  start: string,
+  end: string,
+  amount: string,
+  release: string
+}
+
 export type TAppState = {
   kujiBalance: number;
   kartBalance: number;
@@ -37,6 +44,13 @@ export type TAppStore = {
     ) => Promise<void>;
     claim: () => Promise<void>;
     unlock: () => Promise<void>;
+    addReward: (
+      amount: number,
+      denom: string,
+      schedule: Schedule,
+      sender: string,
+      fn: TSignAndBroadcastFn,
+      query: KujiraQueryClient) => Promise<void>;
     setLoading: (status: boolean) => void;
   };
 };
