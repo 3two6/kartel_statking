@@ -5,7 +5,7 @@ import { create } from "zustand";
 
 import { BigNumber } from "@ethersproject/bignumber";
 import { coin } from "@cosmjs/proto-signing";
-import { stakingApiService } from "@/lib/service";
+import { stakingApiService, traitApiService } from "@/lib/service";
 import { ETXTYPE } from "@/constant/stake";
 
 const initialState: TAppState = {
@@ -14,6 +14,7 @@ const initialState: TAppState = {
   uskBalance: 0,
   kartPrice: 0,
   stakedAmt: 0,
+  totalStaked: 0,
   rewards: { uskReward: 0, kartReward: 0 },
   claims: [],
   loading: false,
@@ -27,6 +28,17 @@ const useAppStore = create<TAppStore>((set, get) => {
         get().actions.setLoading(true);
 
         try {
+          const resKartPrice = await traitApiService.getKartCurrency()
+          const resTotalStake = await traitApiService.getTotalStakeAmount()
+
+          set({
+            app: {
+              ...get().app,
+              kartPrice: Number(resKartPrice.value),
+              totalStaked: Number(resTotalStake.value),
+            },
+          });
+
         } catch (err) {
           console.log(err)
         } finally {
@@ -189,6 +201,12 @@ const useAppStore = create<TAppStore>((set, get) => {
 
           await get().actions.getUserInfo(sender, query);
           await get().actions.getAppInfo(query);
+          await stakingApiService.stakeToken({
+            address: sender,
+            txHash: tx.transactionHash,
+            txDate: new Date(),
+            txType: ETXTYPE.CLAIM
+          })
         } catch (err) {
           console.log(err);
         } finally {
@@ -211,6 +229,12 @@ const useAppStore = create<TAppStore>((set, get) => {
 
           await get().actions.getUserInfo(sender, query);
           await get().actions.getAppInfo(query);
+          await stakingApiService.stakeToken({
+            address: sender,
+            txHash: tx.transactionHash,
+            txDate: new Date(),
+            txType: ETXTYPE.WITHDRAW
+          })
         } catch (err) {
           console.log(err);
         } finally {

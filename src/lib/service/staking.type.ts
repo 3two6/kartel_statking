@@ -13,7 +13,7 @@ export interface IStakingModel extends IBasicModel {
 
 export type TCreatedStakingPayload = {
     address: string;
-    amount: number;
+    amount?: number;
     txHash: string;
     txDate: Date;
     txType: ETXTYPE;
@@ -22,6 +22,12 @@ export type TCreatedStakingPayload = {
 export type TGetStakeHistoryPayload = {
     address: string;
     timeStamp: EFilterDate;
+}
+
+export type TGetActivitiesPayload = {
+    offset: number;
+    limit: number;
+    address: string;
 }
 
 export interface IGetStakeHistory {
