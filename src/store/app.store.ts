@@ -15,7 +15,7 @@ const initialState: TAppState = {
   stakedAmt: 0,
   rewards: 0,
   claims: [],
-  loading: false,
+  loading: true,
 };
 
 const useAppStore = create<TAppStore>((set, get) => {
