@@ -21,6 +21,7 @@ export type TAppStore = {
   app: TAppState;
   actions: {
     getAppInfo: (query: KujiraQueryClient) => Promise<void>;
+    initializeAppInfo: () => Promise<void>;
     getUserInfo: (owner: string, query: KujiraQueryClient) => Promise<void>;
     bond: (
       amount: number,
