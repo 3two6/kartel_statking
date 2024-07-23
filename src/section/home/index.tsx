@@ -4,9 +4,9 @@ import { KartCard } from "@/components/card";
 import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Chart from "react-apexcharts";
 import {
+  EFilterDate,
   KartPositions,
   Kartprices,
-  PortfolioDayOptions,
   chartData,
 } from "../../constant";
 import Image from "next/image";
@@ -17,7 +17,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import Link from "next/link";
 
 export default function HomeSection() {
-  const [selectedDay, setSelectedDay] = useState(PortfolioDayOptions[2].value);
+  const [selectedDay, setSelectedDay] = useState(EFilterDate.week);
 
   const appState = useAppState();
 
@@ -100,13 +100,13 @@ export default function HomeSection() {
                   <p className="text-xl font-semibold text-gray-300">$0</p>
                 </div>
                 <div className="grid w-36 grid-cols-3 rounded-lg border border-purple-border bg-transparent p-2 transition-all duration-150 ease-in-out lg:w-6/12">
-                  {PortfolioDayOptions.map((item, index) => (
+                  {Object.values(EFilterDate).map((item, index) => (
                     <button
                       key={index}
-                      className={`rounded-lg text-sm p-1 ${selectedDay === item.value ? "bg-purple text-white shadow" : "text-gray-300"}`}
-                      onClick={() => setSelectedDay(item.value)}
+                      className={`rounded-lg text-sm p-1 ${selectedDay === item ? "bg-purple text-white shadow" : "text-gray-300"}`}
+                      onClick={() => setSelectedDay(item)}
                     >
-                      {item.label}
+                      {item}
                     </button>
                   ))}
                 </div>

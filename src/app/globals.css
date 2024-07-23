@@ -22,7 +22,7 @@ input::-webkit-inner-spin-button {
   border-radius: 10px;
 }
 
-#scrollarea > div {
+#scrollarea>div {
   display: flex !important;
 }
 
@@ -195,7 +195,7 @@ input::-webkit-inner-spin-button {
   display: none;
 }
 
-.Toastify__toast > button > svg {
+.Toastify__toast>button>svg {
   display: none;
 }
 
@@ -249,6 +249,45 @@ input::-webkit-inner-spin-button {
     transform: scale(0.95);
     box-shadow: rgba(84, 214, 44, 0) 0px 0px 0px 0px;
   }
+}
+
+@keyframes rotate4 {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash4 {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+
+  50% {
+    stroke-dasharray: 90, 200;
+    stroke-dashoffset: -35px;
+  }
+
+  100% {
+    stroke-dashoffset: -125px;
+  }
+}
+
+/* small loading */
+.small-loading svg {
+  width: 1.5em;
+  transform-origin: center;
+  animation: rotate4 2s linear infinite;
+}
+
+.small-loading circle {
+  fill: none;
+  stroke: hsl(0, 0%, 100%);
+  stroke-width: 2;
+  stroke-dasharray: 1, 200;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  animation: dash4 1.5s ease-in-out infinite;
 }
 
 @keyframes rotate4 {

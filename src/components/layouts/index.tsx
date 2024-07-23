@@ -7,7 +7,7 @@ import { useNetwork } from "@/provider/crypto/network";
 import { useWallet } from "@/provider/crypto/wallet";
 
 export default function AppLayouts({ children }: { children: ReactNode }) {
-  const { getAppInfo, getUserInfo } = useAppActions();
+  const { getAppInfo, getUserInfo, initializeAppInfo } = useAppActions();
 
   const [{ query }] = useNetwork();
   const { account } = useWallet();
@@ -17,9 +17,11 @@ export default function AppLayouts({ children }: { children: ReactNode }) {
       getAppInfo(query);
       if (account) {
         getUserInfo(account.address, query);
+      } else {
+        initializeAppInfo()
       }
     }
-  }, [account, query]);
+  }, [account?.address, query]);
 
   return (
     <div className="h-screen flex flex-col bg-opacity-90 bg-gradient-to-b from-dark to-dark bg-blend-multiply">
