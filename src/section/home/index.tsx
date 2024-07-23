@@ -6,7 +6,6 @@ import Chart from "react-apexcharts";
 import {
   EFilterDate,
   KartPositions,
-  Kartprices,
   chartData,
 } from "../../constant";
 import Image from "next/image";
@@ -18,9 +17,9 @@ import Link from "next/link";
 
 export default function HomeSection() {
   const [selectedDay, setSelectedDay] = useState(EFilterDate.week);
-
+  const [earnedAmount, setEarnedAmount] = useState(0);
+  const [kartPrice, setKartPrice] = useState(0);
   const appState = useAppState();
-
   const stakedAmt = toHuman(BigNumber.from(appState.stakedAmt), 6).toFixed(3);
 
   return (
@@ -28,12 +27,14 @@ export default function HomeSection() {
       <main className="mt-10 w-full max-w-7xl px-4 sm:mt-32 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-5">
           <div className="flex flex-col gap-y-5 lg:col-span-1">
-            {Kartprices.map((item, index) => (
-              <KartCard key={index}>
-                <h1 className="font-light text-gray-300">{item.label}</h1>
-                <p className="pt-3 text-lg text-gray-300">{item.value}</p>
-              </KartCard>
-            ))}
+            <KartCard>
+              <h1 className="font-light text-gray-300">Rewards earned daily</h1>
+              <p className="pt-3 text-lg text-gray-300">{earnedAmount} USD</p>
+            </KartCard>
+            <KartCard>
+              <h1 className="font-light text-gray-300">KART price</h1>
+              <p className="pt-3 text-lg text-gray-300">{kartPrice} USDC</p>
+            </KartCard>
           </div>
           <div className="lg:col-span-2">
             <KartCard>
