@@ -1,7 +1,7 @@
 "use client";
 
 import { KartCard } from "@/components/card";
-import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableHead, TableHeader, TableRow, TableBody, TableCell } from "@/components/ui/table";
 import Chart from "react-apexcharts";
 import {
   EFilterDate,
@@ -13,22 +13,27 @@ import { useAppActions, useAppState } from "@/store/app.store";
 import { toHuman } from "kujira.js";
 import { BigNumber } from "@ethersproject/bignumber";
 import Link from "next/link";
+import { stakingApiService } from "@/lib/service";
 import { useWallet } from "@/provider/crypto/wallet";
 import { useNetwork } from "@/provider/crypto/network";
 import useToast from "@/hooks/use-toast";
-import { stakingApiService } from "@/lib/service";
+import { ETXTYPE } from "@/constant/stake";
+import { addDaysToTimestamp } from "@/lib/utils";
 
 export default function HomeSection() {
-  const toast = useToast();
   const [chartTimeStep, setChartTimeStep] = useState(EFilterDate.week);
-  const { signAndBroadcast } = useWallet()
-  const { withdraw } = useAppActions()
-  const [{ query }] = useNetwork()
-  const [chartYData, setChartYData] = useState<number[]>([]);
   const [chartXData, setChartXData] = useState<string[]>([]);
+  const [chartYData, setChartYData] = useState<number[]>([]);
+
   const appState = useAppState();
-  const { account } = useWallet();
   const stakedAmt = toHuman(BigNumber.from(appState.stakedAmt), 6).toFixed(3);
+
+  const { account, signAndBroadcast } = useWallet()
+
+  const { withdraw } = useAppActions()
+
+  const [{ query }] = useNetwork()
+  const toast = useToast()
 
   const fetchStakeHistory = async () => {
     try {
@@ -41,6 +46,7 @@ export default function HomeSection() {
         setChartXData(resStakeHistory?.xData)
         setChartYData(resStakeHistory?.yData)
       }
+
 
     } catch (error) {
       console.error(error)
@@ -86,7 +92,7 @@ export default function HomeSection() {
             </KartCard>
             <KartCard>
               <h1 className="font-light text-gray-300">KART Price</h1>
-              <p className="pt-3 text-lg text-gray-300">{0} USDC</p>
+              <p className="pt-3 text-lg text-gray-300">{appState.kartPrice} USDC</p>
             </KartCard>
           </div>
           <div className="lg:col-span-2">
@@ -116,7 +122,7 @@ export default function HomeSection() {
                   <div className="flex flex-col items-center">
                     <p className="text-gray-300 font-light">Staking APR</p>
                     <p className="text-sm font-semibold text-gray-300">
-                      12.6 %
+                      12.64 %
                     </p>
                   </div>
                   <div className="flex flex-col items-center">
@@ -166,7 +172,6 @@ export default function HomeSection() {
               <div className="flex w-full items-center justify-between px-4">
                 <div className="flex flex-col">
                   <h2 className="text-base text-gray-300">Your Portfolio</h2>
-                  <p className="text-xl font-semibold text-gray-300">$0</p>
                 </div>
                 <div className="grid w-36 grid-cols-3 rounded-lg border border-purple-border bg-transparent p-2 transition-all duration-150 ease-in-out lg:w-6/12">
                   {Object.values(EFilterDate).map((item, index) => (
@@ -200,7 +205,7 @@ export default function HomeSection() {
               </h2>
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="whitespace-nowrap">
                     <TableHead className="w-[100px] text-gray-300">
                       Timestamp
                     </TableHead>
@@ -213,21 +218,28 @@ export default function HomeSection() {
                       Release Date
                     </TableHead>
                     <TableHead className="text-gray-300">Status</TableHead>
-                    <TableHead className="text-right text-gray-300">
+                    <TableHead className="text-left text-gray-300">
                       Finder
                     </TableHead>
                   </TableRow>
                 </TableHeader>
-                {/* <TableBody> */}
-                {/* {invoices.map((invoice) => (
-                                        <TableRow key={invoice.invoice}>
-                                            <TableCell className="font-medium">{invoice.invoice}</TableCell>
-                                            <TableCell>{invoice.paymentStatus}</TableCell>
-                                            <TableCell>{invoice.paymentMethod}</TableCell>
-                                            <TableCell className="text-right">{invoice.totalAmount}</TableCell>
-                                        </TableRow>
-                                    ))} */}
-                {/* </TableBody> */}
+                <TableBody>
+                  {appState.activity.length > 0 && appState.activity.map((item, index) => (
+                    <TableRow key={index} className="text-white">
+                      <TableCell className="text-gray-400 text-sm">{item.txDate?.toString() ?? "-"}</TableCell>
+                      <TableCell className="text-gray-400 text-sm">{item.txType ?? "-"}</TableCell>
+                      <TableCell className="text-gray-400 text-sm">{item.amount ?? "-"}</TableCell>
+                      <TableCell className="text-center">{item.txType === ETXTYPE.UNSTAKE && "14 Days"}</TableCell>
+                      <TableCell className="text-left">{item.txType === ETXTYPE.UNSTAKE && addDaysToTimestamp(item.txDate?.toString() ?? "-", 14)}</TableCell>
+                      <TableCell className="text-right text-green">success</TableCell>
+                      <TableCell className="flex text-left max-w-56 items-center h-full">
+                        <Link href={`https://finder.kujira.network/harpoon-4/tx/${item.txHash}`} target="_blank" className="truncate text-sm">
+                          {item.txHash ?? '-'}
+                        </Link>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
               </Table>
             </KartCard>
           </div>

@@ -6,7 +6,7 @@ import { StakingOptions } from "../../constant";
 import { useAppActions, useAppState } from "@/store/app.store";
 import { toHuman } from "kujira.js";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BigNumber } from "@ethersproject/bignumber";
 import { useNetwork } from "@/provider/crypto/network";
 import { useWallet } from "@/provider/crypto/wallet";
@@ -24,13 +24,14 @@ export default function StakingSection() {
   const { account, signAndBroadcast } = useWallet();
 
   const appState = useAppState();
-  const { bond, unbond, getUserInfo } = useAppActions();
+  const { bond, unbond, claim } = useAppActions();
 
   const toast = useToast();
 
   const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(2);
   const stakedKartBalance = toHuman(BigNumber.from(appState.stakedAmt), 6).toFixed(2);
   const avaliableBalance = selectedOption === StakingOptions[1].value ? stakedKartBalance : kartBalance
+
 
   const handleStake = async () => {
     if (!account) {
@@ -43,7 +44,12 @@ export default function StakingSection() {
       return;
     }
 
-    if ((parseFloat(amount) > parseFloat(avaliableBalance)) || (parseFloat(amount) <= 0)) {
+    if ((parseFloat(amount) <= 0)) {
+      toast.error("Invalid amount");
+      return;
+    }
+
+    if ((parseFloat(amount) > parseFloat(avaliableBalance))) {
       toast.error("Insufficient balance to stake");
       return;
     }
@@ -66,7 +72,12 @@ export default function StakingSection() {
       return;
     }
 
-    if ((parseFloat(amount) > parseFloat(avaliableBalance)) || (parseFloat(amount) <= 0)) {
+    if ((parseFloat(amount) <= 0)) {
+      toast.error("Invalid amount");
+      return;
+    }
+
+    if ((parseFloat(amount) > parseFloat(avaliableBalance))) {
       toast.error("Insufficient balance to unstake");
       return;
     }
@@ -78,6 +89,25 @@ export default function StakingSection() {
       toast.error("User rejected transaction");
     }
   };
+
+  const handleClaim = async () => {
+    if (!account) {
+      toast.error("Connect your wallet");
+      return;
+    }
+
+    if (!query) {
+      toast.error("Network Error");
+      return;
+    }
+
+    try {
+      await claim(account.address, signAndBroadcast, query);
+      toast.success("Claim KART released");
+    } catch (err) {
+      toast.error("User rejected transaction");
+    }
+  }
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
@@ -93,11 +123,6 @@ export default function StakingSection() {
     }
   };
 
-  useEffect(() => {
-    if (account && query) {
-      getUserInfo(account.address, query);
-    }
-  }, [selectedOption]);
 
   return (
     <div className="relative z-10 flex w-full flex-col items-center px-4 py-5 sm:px-6 sm:pt-0 lg:px-8">
@@ -119,65 +144,93 @@ export default function StakingSection() {
         </div>
         <div className={`flex w-full flex-col gap-5 ${selectedOption === StakingOptions[2].value && "h-48"}`}>
           {
-            selectedOption !== StakingOptions[2].value &&
-            <>
-              <div className="flex w-full flex-col items-center">
-                <div className="flex w-full items-center gap-x-2">
-                  <span className="text-sm font-light text-gray-300">Available : </span>
-                  <span className="text-sm text-gray-300">{avaliableBalance} KART</span>
-                </div>
-                <div className="w-full text-lg">
-                  <div className="mt-2 flex items-center rounded-sm bg-transparent px-4 py-2 shadow-sm border border-purple-border">
-                    <div className="relative flex grow items-stretch">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center gap-2">
-                        <Image
-                          alt="Kart Logo black"
-                          width={20}
-                          height={20}
-                          src="/images/logo.png"
+            selectedOption !== StakingOptions[2].value ? (
+              <>
+                <div className="flex w-full flex-col items-center">
+                  <div className="flex w-full items-center gap-x-2">
+                    <span className="text-sm font-light text-gray-300">Available : </span>
+                    <span className="text-sm text-gray-300">{avaliableBalance} KART</span>
+                  </div>
+                  <div className="w-full text-lg">
+                    <div className="mt-2 flex items-center rounded-sm bg-transparent px-4 py-2 shadow-sm border border-purple-border">
+                      <div className="relative flex grow items-stretch">
+                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center gap-2">
+                          <Image
+                            alt="Kart Logo black"
+                            width={20}
+                            height={20}
+                            src="/images/logo.png"
+                          />
+                          <span className="text-gray-300 uppercase text-base">
+                            kart
+                          </span>
+                        </div>
+                        <Input
+                          type="number"
+                          className="block w-full bg-transparent py-2 pl-20 outline-none placeholder:text-lg placeholder:text-primary/50 sm:text-lg sm:leading-6"
+                          value={amount}
+                          onChange={handleAmountChange}
                         />
-                        <span className="text-gray-300 uppercase text-base">
-                          kart
-                        </span>
                       </div>
-                      <Input
-                        type="number"
-                        className="block w-full bg-transparent py-2 pl-20 outline-none placeholder:text-lg placeholder:text-primary/50 sm:text-lg sm:leading-6"
-                        value={amount}
-                        onChange={handleAmountChange}
-                      />
+                      <button
+                        type="button"
+                        className="relative text-gray-300 inline-flex items-center gap-x-1.5 rounded bg-purple px-2 py-1.5 text-sm shadow-md"
+                        onClick={() => setAmount(avaliableBalance)}
+                      >
+                        MAX
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      className="relative text-gray-300 inline-flex items-center gap-x-1.5 rounded bg-purple px-2 py-1.5 text-sm shadow-md"
-                      onClick={() => setAmount(avaliableBalance)}
-                    >
-                      MAX
-                    </button>
                   </div>
                 </div>
-              </div>
-              <div className="flex w-full flex-col gap-y-1 text-xs">
-                <div className="flex min-h-3 justify-between">
-                  {selectedOption === StakingOptions[1].value && (
-                    <>
-                      <div className="text-gray-300 text-sm">Unstaking Period</div>
-                      <div className="text-white text-sm">10 Days</div>
-                    </>
-                  )}
+                <div className="flex w-full flex-col gap-y-1 text-xs">
+                  <div className="flex min-h-3 justify-between">
+                    {selectedOption === StakingOptions[1].value && (
+                      <>
+                        <div className="text-gray-300 text-sm">Unstaking Period</div>
+                        <div className="text-white text-sm">10 Days</div>
+                      </>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <button
-                className={`flex flex-row gap-4 justify-center bg-purple border w-full rounded py-3 text-gray-300 transition-all duration-100 ease-in-out ${selectedOption === StakingOptions[0].value ? "bg-purple border-transparent" : "bg-transparent border-purple-border"}`}
-                onClick={
-                  selectedOption === StakingOptions[0].value
-                    ? handleStake
-                    : handleUnstake
+                <button
+                  className={`flex flex-row gap-4 justify-center bg-purple border w-full rounded py-3 text-gray-300 transition-all duration-100 ease-in-out ${selectedOption === StakingOptions[0].value ? "bg-purple border-transparent" : "bg-transparent border-purple-border"}`}
+                  onClick={
+                    selectedOption === StakingOptions[0].value
+                      ? handleStake
+                      : handleUnstake
+                  }
+                >
+                  {selectedOption === StakingOptions[0].value ? "Stake" : "Unstake"}
+                </button>
+              </>
+            ) : (
+              <div className="p-3">
+
+                {
+                  appState.claims.length === 0 ?
+                    (<></>) :
+                    (<div>
+                      <span className="text-white text-sm">Unstaking Process</span>
+                      {appState.claims.map((claim, index) => (
+                        <div key={index} className="text-white w-full flex justify-between py-3 text-base">
+                          <span>{claim.amount} KART</span>
+                          <span>{new Date(parseInt(claim.release_at) / 1_000_000).toLocaleString()}</span>
+                        </div>
+                      ))}
+                      <button
+                        className={`flex flex-row gap-4 justify-center bg-purple border w-full rounded py-3 mt-5 text-gray-300 transition-all duration-100 ease-in-out  bg-transparent border-purple-border`}
+                        onClick={
+                          handleClaim
+                        }
+                      >
+                        Claim
+                      </button>
+                    </div>
+                    )
                 }
-              >
-                {selectedOption === StakingOptions[0].value ? "Stake" : "Unstake"}
-              </button>
-            </>
+
+              </div>
+            )
           }
         </div>
       </KartCard>

@@ -5,7 +5,7 @@ import { create } from "zustand";
 
 import { BigNumber } from "@ethersproject/bignumber";
 import { coin } from "@cosmjs/proto-signing";
-import { stakingApiService } from "@/lib/service";
+import { stakingApiService, traitApiService } from "@/lib/service";
 import { ETXTYPE } from "@/constant/stake";
 
 const initialState: TAppState = {
@@ -14,8 +14,10 @@ const initialState: TAppState = {
   uskBalance: 0,
   kartPrice: 0,
   stakedAmt: 0,
+  totalStaked: 0,
   rewards: { uskReward: 0, kartReward: 0 },
   claims: [],
+  activity: [],
   loading: false,
 };
 
@@ -27,6 +29,17 @@ const useAppStore = create<TAppStore>((set, get) => {
         get().actions.setLoading(true);
 
         try {
+          const resKartPrice = await traitApiService.getKartCurrency()
+          const resTotalStake = await traitApiService.getTotalStakeAmount()
+
+          set({
+            app: {
+              ...get().app,
+              kartPrice: Number(resKartPrice.value ?? 0.046),
+              totalStaked: Number(resTotalStake.value ?? 0),
+            },
+          });
+
         } catch (err) {
           console.log(err)
         } finally {
@@ -43,6 +56,11 @@ const useAppStore = create<TAppStore>((set, get) => {
 
       async getUserInfo(owner, query) {
         get().actions.setLoading(true);
+        const resUserActivities = await stakingApiService.getUserActivities({
+          address: owner,
+          limit: 10,
+          offset: 0
+        })
 
         if (!owner) {
           set({
@@ -69,7 +87,17 @@ const useAppStore = create<TAppStore>((set, get) => {
 
           const claims = await query.wasm
             .queryContractSmart(STAKING_ADDR, { claims: { address: owner } })
-            .then((x) => x?.claims ?? []);
+            .then((x: { claims: Array<any> }) => {
+              if (x.claims.length > 0) {
+                let claims: Array<{ amount: string, release_at: string }> = [];
+                x.claims.map((claim) => {
+                  claims.push({ amount: toHuman(BigNumber.from(claim.amount), 6).toString(), release_at: claim.release_at.at_time })
+                })
+                return claims
+              } else {
+                return []
+              }
+            });
 
           const rewards = await query.wasm.queryContractSmart(
             REWARDS_ADDR, { pending_rewards: { staker: owner } }
@@ -94,6 +122,7 @@ const useAppStore = create<TAppStore>((set, get) => {
               uskBalance: Number(uskBalance ?? 0),
               stakedAmt: stakedAmt?.stake ?? 0,
               rewards: rewards,
+              activity: resUserActivities.items,
               claims,
             },
           });
@@ -187,6 +216,12 @@ const useAppStore = create<TAppStore>((set, get) => {
 
           await get().actions.getUserInfo(sender, query);
           await get().actions.getAppInfo(query);
+          await stakingApiService.stakeToken({
+            address: sender,
+            txHash: tx.transactionHash,
+            txDate: new Date(),
+            txType: ETXTYPE.CLAIM
+          })
         } catch (err) {
           console.log(err);
         } finally {
@@ -209,6 +244,12 @@ const useAppStore = create<TAppStore>((set, get) => {
 
           await get().actions.getUserInfo(sender, query);
           await get().actions.getAppInfo(query);
+          await stakingApiService.stakeToken({
+            address: sender,
+            txHash: tx.transactionHash,
+            txDate: new Date(),
+            txType: ETXTYPE.WITHDRAW
+          })
         } catch (err) {
           console.log(err);
         } finally {
