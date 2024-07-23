@@ -14,7 +14,7 @@ import useToast from "@/hooks/use-toast";
 import { useAppState } from "@/store/app.store";
 import { BigNumber } from "ethers";
 import { toHuman } from "kujira.js";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -32,7 +32,8 @@ export default function RewardsSection() {
   const toast = useToast();
   const [selectedToken, setSelectedToken] = useState(token[0]);
   const [month, setMonth] = useState<number>(1);
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState<number>(0);
+  const [maxAmount, setMaxAmount] = useState<number>(0);
 
   const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(
     2,
@@ -46,6 +47,14 @@ export default function RewardsSection() {
     setMonth(Number(value));
   }
 
+  const handleSetAmount = (event: ChangeEvent<HTMLInputElement>) => {
+    setAmount(Number(event.target.value));
+  }
+
+  const handleSetMaxAmount = () => {
+    console.log("handle set max amount");
+  }
+
   return (
     <div className="relative z-10 flex w-full flex-col items-center justify-center px-4 py-5 sm:px-6 sm:pt-0 lg:px-8 sm:mt-24">
       <KartCard className="my-10 flex w-full max-w-lg flex-col items-start gap-y-8 p-8 drop-shadow-16 sm:mb-0">
@@ -56,14 +65,14 @@ export default function RewardsSection() {
         <div className="flex w-full flex-col items-center">
           <div className="flex flex-row w-full gap-2">
             <span className="text-xs font-light text-gray-300">Available : </span>
-            <span className="text-xs text-gray-300">{kartBalance} KART</span>
+            <span className="text-xs text-gray-300">{kartBalance} <span className="text-gray-300 uppercase">{selectedToken.name}</span></span>
           </div>
           <div className="w-full text-lg">
             <div className="mt-2 flex items-center rounded-sm bg-transparent px-4 py-2 shadow-sm border border-purple-border">
               <div className="relative flex grow items-stretch">
                 <span className="absolute top-0 left-0 flex h-full items-center justify-center text-gray500">
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+                    <DropdownMenuTrigger asChild className="text-gray-300">
                       <div className="flex cursor-pointer items-center gap-2 uppercase">
                         <Image
                           width="20"
@@ -76,7 +85,6 @@ export default function RewardsSection() {
                       </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-12 border-purple-0.5 bg-[#0D0B32CC]">
-
                       <DropdownMenuRadioGroup
                         value={selectedToken.name}
                         onValueChange={(value) => {
@@ -102,12 +110,15 @@ export default function RewardsSection() {
                 </span>
                 <Input
                   type="number"
-                  className="block w-full bg-transparent py-2 pl-20 outline-none placeholder:text-lg placeholder:text-primary/50 sm:text-lg sm:leading-6"
+                  value={amount}
+                  onChange={handleSetAmount}
+                  className="block w-full bg-transparent text-gray-600 py-2 pl-20 outline-none placeholder:text-lg placeholder:text-primary/50 sm:text-lg sm:leading-6"
                 />
               </div>
               <button
                 type="button"
                 className="relative text-gray-300 inline-flex items-center gap-x-1.5 rounded bg-purple px-2 py-1.5 text-sm shadow-md"
+                onClick={handleSetMaxAmount}
               >
                 MAX
               </button>
@@ -119,7 +130,7 @@ export default function RewardsSection() {
             Select the distribution period for the tokens in months.
           </p>
           <Select onValueChange={handleSetDuration} >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full ">
               <SelectValue placeholder="Select period" />
             </SelectTrigger>
             <SelectContent className="border-purple-0.5 bg-[#0D0B32CC]">
