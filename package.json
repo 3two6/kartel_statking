@@ -34,6 +34,7 @@
     "ethers": "^5.7.2",
     "kujira.js": "^1.0.46",
     "lucide-react": "^0.363.0",
+    "moment": "^2.30.1",
     "next": "14.1.4",
     "pino-pretty": "^11.2.1",
     "react": "^18",
