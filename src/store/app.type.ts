@@ -17,9 +17,10 @@ export type Schedule = {
 export type TAppState = {
   kujiBalance: number;
   kartBalance: number;
+  uskBalance: number;
   kartPrice: number;
   stakedAmt: number;
-  rewards: number;
+  rewards: { uskReward: number, kartReward: number };
   claims: Array<{ amount: string; release_at: number }>;
   loading: boolean;
 };
@@ -42,8 +43,16 @@ export type TAppStore = {
       fn: TSignAndBroadcastFn,
       query: KujiraQueryClient,
     ) => Promise<void>;
-    claim: () => Promise<void>;
-    unlock: () => Promise<void>;
+    claim: (
+      sender: string,
+      fn: TSignAndBroadcastFn,
+      query: KujiraQueryClient
+    ) => Promise<void>;
+    withdraw: (
+      sender: string,
+      fn: TSignAndBroadcastFn,
+      query: KujiraQueryClient
+    ) => Promise<void>;
     addReward: (
       amount: number,
       denom: string,
