@@ -4,7 +4,6 @@ import {
   StatusResponse,
   Tendermint37Client,
 } from "@cosmjs/tendermint-rpc";
-
 import { ChainInfo } from "@keplr-wallet/types";
 
 import {
@@ -14,6 +13,7 @@ import {
   NETWORK,
   RPCS,
   kujiraQueryClient,
+  MAINNET,
 } from "kujira.js";
 
 import {
@@ -27,6 +27,8 @@ import {
   useMemo,
   useState,
 } from "react";
+
+const isProduction = process.env.NEXT_PUBLIC_NETWORK === "mainnet";
 
 interface RPCConnection {
   endpoint: string;
@@ -49,16 +51,16 @@ export type NetworkContext = {
 };
 
 const Context = createContext<NetworkContext>({
-  network: TESTNET,
-  setNetwork: () => {},
+  network: isProduction ? MAINNET : TESTNET,
+  setNetwork: () => { },
   tmClient: null,
   query: null,
   rpc: "",
   rpcs: [],
-  setRpc: () => {},
+  setRpc: () => { },
   preferred: null,
-  unlock: () => {},
-  lock: () => {},
+  unlock: () => { },
+  lock: () => { },
 });
 
 const toClient = async (
@@ -97,7 +99,7 @@ export const NetworkContext: React.FC<
     onError?: (err: any) => void;
   }>
 > = ({ children, onError }) => {
-  const [network, setNetwork] = useLocalStorage("network", TESTNET);
+  const [network, setNetwork] = useLocalStorage("network", isProduction ? MAINNET : TESTNET);
   const [preferred, setPreferred] = useLocalStorage("rpc", "");
   const [tm, setTmClient] = useState<null | [Tendermint37Client, string]>();
   const [latencies, setLatencies] = useState<Record<string, RPCConnection>>({});
@@ -220,7 +222,9 @@ export const useNetwork = (): [
       chainInfo: CHAIN_INFO[network],
       tmClient,
       query,
-      rpc: "https://kujira-testnet-rpc.polkachu.com",
+      rpc: isProduction
+        ? "https://kujira-rpc.openbitlab.com"
+        : "https://kujira-testnet-rpc.polkachu.com",
       rpcs,
       setRpc,
       preferred,
