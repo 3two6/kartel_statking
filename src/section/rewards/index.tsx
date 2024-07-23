@@ -11,10 +11,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { token } from "../../constant";
 import useToast from "@/hooks/use-toast";
-import { useAppState } from "@/store/app.store";
+import { useAppActions, useAppState } from "@/store/app.store";
 import { BigNumber } from "ethers";
-import { toHuman } from "kujira.js";
-import { ChangeEvent, useEffect, useState } from "react";
+import { fromHumanString, toHuman } from "kujira.js";
+import { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -24,6 +24,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
+import { useWallet } from "@/provider/crypto/wallet";
+import { useNetwork } from "@/provider/crypto/network";
+import { KART_DENOM, USK_DENOM } from "@/constant/token";
 
 export default function RewardsSection() {
 
@@ -33,23 +36,79 @@ export default function RewardsSection() {
   const [selectedToken, setSelectedToken] = useState(token[0]);
   const [month, setMonth] = useState<number>(1);
   const [amount, setAmount] = useState("0");
-  const [maxAmount, setMaxAmount] = useState<number>(0);
+
+  const { addReward } = useAppActions()
+
+  const { account, signAndBroadcast } = useWallet()
+  const [{ query }] = useNetwork()
 
   const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(
-    2,
+    3,
+  );
+
+  const uskBalance = toHuman(BigNumber.from(appState.uskBalance), 6).toFixed(
+    3,
   );
 
   const handleRewards = async () => {
-    console.log("handle rewards");
+    if (!account) {
+      toast.error("Connect your wallet");
+      return;
+    }
+
+    if (!query) {
+      toast.error("Network Error");
+      return;
+    }
+
+    if (Number(amount) === 0) {
+      toast.error("Input valid amount");
+      return;
+    }
+
+    if (selectedToken.denom === USK_DENOM && (parseFloat(amount) > parseFloat(uskBalance))) {
+      toast.error("Insufficient balance to reward");
+      return;
+    }
+
+    if (selectedToken.denom === KART_DENOM && (parseFloat(amount) > parseFloat(kartBalance))) {
+      toast.error("Insufficient balance to reward");
+      return;
+    }
+
+    try {
+
+      const startDate = new Date()
+      const endDate = addMonthsToDate(startDate, month)
+      await addReward(
+        Number(amount),
+        selectedToken.denom,
+        { start: (startDate.getTime() * 1000000).toString(), end: (endDate.getTime() * 1000000).toString(), amount: fromHumanString(amount, 6).toString(), release: "fixed" },
+        account.address,
+        signAndBroadcast,
+        query
+      );
+      toast.success("Add Reward success");
+    } catch (err) {
+      toast.error("User rejected transaction");
+    }
+
   };
 
   const handleSetDuration = (value: string) => {
     setMonth(Number(value));
   }
 
+  function addMonthsToDate(startDate: Date, months: number) {
+    const date = new Date(startDate);
+    date.setMonth(date.getMonth() + months);
+    return date;  // Convert back to ISO string format
+  }
+
+
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    const reqTest = new RegExp(`^\\d*\\.?\\d{0,2}$`);
+    const reqTest = new RegExp(`^\\d*\\.?\\d{0,3}$`);
     if (reqTest.test(inputValue) && inputValue !== "") {
       const updateValue =
         parseFloat(inputValue) >= 1
@@ -63,7 +122,11 @@ export default function RewardsSection() {
 
 
   const handleSetMaxAmount = () => {
-    console.log("handle set max amount");
+    if (selectedToken.denom === USK_DENOM) {
+      setAmount(uskBalance)
+    } else if (selectedToken.denom === KART_DENOM) {
+      setAmount(kartBalance)
+    }
   }
 
   return (
@@ -76,7 +139,7 @@ export default function RewardsSection() {
         <div className="flex w-full flex-col items-center">
           <div className="flex flex-row w-full gap-2">
             <span className="text-xs font-light text-gray-300">Available : </span>
-            <span className="text-xs text-gray-300">{kartBalance} <span className="text-gray-300 uppercase">{selectedToken.name}</span></span>
+            <span className="text-xs text-gray-300">{selectedToken.denom === USK_DENOM ? uskBalance : kartBalance} <span className="text-gray-300 uppercase">{selectedToken.name}</span></span>
           </div>
           <div className="w-full text-lg">
             <div className="mt-2 flex items-center rounded-sm bg-transparent px-4 py-2 shadow-sm border border-purple-border">
