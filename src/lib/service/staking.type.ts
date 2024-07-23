@@ -5,6 +5,7 @@ import { IBasicModel } from "@/types/model";
 export interface IStakingModel extends IBasicModel {
     txAddress: string;
     txDate: Date;
+    amount: number;
     txAmount: number;
     txStatus: string;
     txHash: string;
@@ -33,4 +34,9 @@ export type TGetActivitiesPayload = {
 export interface IGetStakeHistory {
     xData: string[];
     yData: number[];
+}
+
+export interface IGetUserActivity {
+    count: number;
+    items: Array<Partial<IStakingModel>>
 }

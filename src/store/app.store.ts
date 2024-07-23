@@ -17,6 +17,7 @@ const initialState: TAppState = {
   totalStaked: 0,
   rewards: { uskReward: 0, kartReward: 0 },
   claims: [],
+  activity: [],
   loading: false,
 };
 
@@ -34,8 +35,8 @@ const useAppStore = create<TAppStore>((set, get) => {
           set({
             app: {
               ...get().app,
-              kartPrice: Number(resKartPrice.value),
-              totalStaked: Number(resTotalStake.value),
+              kartPrice: Number(resKartPrice.value ?? 0.046),
+              totalStaked: Number(resTotalStake.value ?? 0),
             },
           });
 
@@ -55,6 +56,11 @@ const useAppStore = create<TAppStore>((set, get) => {
 
       async getUserInfo(owner, query) {
         get().actions.setLoading(true);
+        const resUserActivities = await stakingApiService.getUserActivities({
+          address: owner,
+          limit: 10,
+          offset: 0
+        })
 
         if (!owner) {
           set({
@@ -81,9 +87,17 @@ const useAppStore = create<TAppStore>((set, get) => {
 
           const claims = await query.wasm
             .queryContractSmart(STAKING_ADDR, { claims: { address: owner } })
-            .then((x) => x?.claims ?? []);
-
-          console.log("claims", claims)
+            .then((x: { claims: Array<any> }) => {
+              if (x.claims.length > 0) {
+                let claims: Array<{ amount: string, release_at: string }> = [];
+                x.claims.map((claim) => {
+                  claims.push({ amount: toHuman(BigNumber.from(claim.amount), 6).toString(), release_at: claim.release_at.at_time })
+                })
+                return claims
+              } else {
+                return []
+              }
+            });
 
           const rewards = await query.wasm.queryContractSmart(
             REWARDS_ADDR, { pending_rewards: { staker: owner } }
@@ -108,6 +122,7 @@ const useAppStore = create<TAppStore>((set, get) => {
               uskBalance: Number(uskBalance ?? 0),
               stakedAmt: stakedAmt?.stake ?? 0,
               rewards: rewards,
+              activity: resUserActivities.items,
               claims,
             },
           });

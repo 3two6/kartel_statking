@@ -1,6 +1,6 @@
 import { CBACKEND_ENDPOINT } from "@/constant";
 import { axiosGet, axiosPost } from "../axios";
-import { IGetStakeHistory, IStakingModel, TCreatedStakingPayload, TGetActivitiesPayload, TGetStakeHistoryPayload } from "./staking.type";
+import { IGetStakeHistory, IGetUserActivity, IStakingModel, TCreatedStakingPayload, TGetActivitiesPayload, TGetStakeHistoryPayload } from "./staking.type";
 
 export const stakeToken: (
     data: TCreatedStakingPayload
@@ -29,7 +29,7 @@ export const getStakeHistory: (
 
 export const getUserActivities: (
     data: TGetActivitiesPayload
-) => Promise<IGetStakeHistory> = async (data) => {
+) => Promise<IGetUserActivity> = async (data) => {
     try {
         const result = await axiosGet(`${CBACKEND_ENDPOINT.staking.userActivity}?address=${data.address}&offset=${data.offset}&limit=${data.limit}`)
         return result
