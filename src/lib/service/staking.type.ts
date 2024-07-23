@@ -1,3 +1,4 @@
+import { EFilterDate } from "@/constant";
 import { ETXTYPE } from "@/constant/stake";
 import { IBasicModel } from "@/types/model";
 
@@ -16,4 +17,14 @@ export type TCreatedStakingPayload = {
     txHash: string;
     txDate: Date;
     txType: ETXTYPE;
-} 
+}
+
+export type TGetStakeHistoryPayload = {
+    address: string;
+    timeStamp: EFilterDate;
+}
+
+export interface IGetStakeHistory {
+    xData: string[];
+    yData: number[];
+}
