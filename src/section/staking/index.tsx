@@ -164,16 +164,20 @@ export default function StakingSection() {
           <div className="w-full text-lg">
             <div className="mt-2 flex items-center rounded-sm bg-transparent px-4 py-2 shadow-sm border border-purple-border">
               <div className="relative flex grow items-stretch">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center">
+                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center gap-2">
                   <Image
                     alt="Kart Logo black"
                     width={20}
                     height={20}
                     src="/images/logo.png"
                   />
+                  <span className="text-gray-300 uppercase text-base">
+                    kart
+                  </span>
                 </div>
                 <Input
-                  className="block w-full bg-transparent py-2 pl-11 outline-none placeholder:text-lg placeholder:text-primary/50 sm:text-lg sm:leading-6"
+                  type="number"
+                  className="block w-full bg-transparent py-2 pl-20 outline-none placeholder:text-lg placeholder:text-primary/50 sm:text-lg sm:leading-6"
                   value={amount}
                   onChange={handleAmountChange}
                 />

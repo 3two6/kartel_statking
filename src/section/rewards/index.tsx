@@ -32,7 +32,7 @@ export default function RewardsSection() {
   const toast = useToast();
   const [selectedToken, setSelectedToken] = useState(token[0]);
   const [month, setMonth] = useState<number>(1);
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState("0");
   const [maxAmount, setMaxAmount] = useState<number>(0);
 
   const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(
@@ -47,9 +47,20 @@ export default function RewardsSection() {
     setMonth(Number(value));
   }
 
-  const handleSetAmount = (event: ChangeEvent<HTMLInputElement>) => {
-    setAmount(Number(event.target.value));
-  }
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    const reqTest = new RegExp(`^\\d*\\.?\\d{0,2}$`);
+    if (reqTest.test(inputValue) && inputValue !== "") {
+      const updateValue =
+        parseFloat(inputValue) >= 1
+          ? inputValue.replace(/^0+/, "")
+          : inputValue;
+      setAmount(updateValue);
+    } else if (inputValue === "") {
+      setAmount("0");
+    }
+  };
+
 
   const handleSetMaxAmount = () => {
     console.log("handle set max amount");
@@ -111,8 +122,8 @@ export default function RewardsSection() {
                 <Input
                   type="number"
                   value={amount}
-                  onChange={handleSetAmount}
-                  className="block w-full bg-transparent text-gray-600 py-2 pl-20 outline-none placeholder:text-lg placeholder:text-primary/50 sm:text-lg sm:leading-6"
+                  onChange={handleAmountChange}
+                  className="block w-full bg-transparent text-gray-300 py-2 pl-20 outline-none placeholder:text-lg placeholder:text-primary/50 sm:text-lg sm:leading-6"
                 />
               </div>
               <button
