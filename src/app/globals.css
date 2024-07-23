@@ -142,7 +142,7 @@ input::-webkit-inner-spin-button {
 }
 
 .Toastify__toast--error {
-  background: #0d2152 !important;
+  background: #120e3bcc !important;
 }
 
 .Toastify__toast--error::before {
@@ -158,7 +158,7 @@ input::-webkit-inner-spin-button {
 }
 
 .Toastify__toast--success {
-  background: #0d2152 !important;
+  background: #120e3bcc !important;
 }
 
 .Toastify__toast--success::before {
