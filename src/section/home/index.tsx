@@ -227,11 +227,11 @@ export default function HomeSection() {
                 <TableBody>
                   {appState.activity.length > 0 && appState.activity.map((item, index) => (
                     <TableRow key={index} className="text-white">
-                      <TableCell className="text-[#90a4ae] text-sm">{formatTimeStamp(item.txDate?.toString() ?? "-")}</TableCell>
+                      <TableCell className="text-[#90a4ae] text-sm whitespace-nowrap">{formatTimeStamp(item.txDate?.toString() ?? "-")}</TableCell>
                       <TableCell className="text-gray-300 text-sm">{item.txType ?? "-"}</TableCell>
                       <TableCell className="text-gray-300 text-sm">{item.amount ?? "-"}</TableCell>
                       <TableCell className="text-center text-gray-300">{item.txType === ETXTYPE.UNSTAKE && "10 Days"}</TableCell>
-                      <TableCell className="text-left text-[#90a4ae]">{item.txType === ETXTYPE.UNSTAKE && formatTimeStamp(addDaysToTimestamp(item.txDate?.toString() ?? "-", 14))}</TableCell>
+                      <TableCell className="text-left text-[#90a4ae] whitespace-nowrap">{item.txType === ETXTYPE.UNSTAKE && formatTimeStamp(addDaysToTimestamp(item.txDate?.toString() ?? "-", 14))}</TableCell>
                       <TableCell className="text-right text-green">
                         <div className="flex rounded-full items-center justify-center border border-[#00c853] bg-[#00c8531a] text-[#00c853] text-xs px-0.5 py-0.5">success</div>
                       </TableCell>
