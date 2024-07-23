@@ -60,14 +60,18 @@ export default function HomeSection() {
                   </Link>
                 </div>
                 <div className="flex flex-row justify-around w-full">
-                  {KartPositions.map((item, index) => (
-                    <div key={index} className="flex flex-col items-center">
-                      <p className="text-gray-300 font-light">{item.label}</p>
-                      <p className="text-sm font-semibold text-gray-300">
-                        {item.value + (item.unit ?? "")}
-                      </p>
-                    </div>
-                  ))}
+                  <div className="flex flex-col items-center">
+                    <p className="text-gray-300 font-light">Staking APR</p>
+                    <p className="text-sm font-semibold text-gray-300">
+                      0%
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <p className="text-gray-300 font-light">Available</p>
+                    <p className="text-sm font-semibold text-gray-300">
+                      0
+                    </p>
+                  </div>
                 </div>
               </div>
               <div className="mt-2 flex w-full sm:mt-5 gap-2">
