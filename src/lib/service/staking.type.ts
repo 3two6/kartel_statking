@@ -5,6 +5,7 @@ import { IBasicModel } from "@/types/model";
 export interface IStakingModel extends IBasicModel {
     txAddress: string;
     txDate: Date;
+    amount: number;
     txAmount: number;
     txStatus: string;
     txHash: string;
@@ -13,7 +14,7 @@ export interface IStakingModel extends IBasicModel {
 
 export type TCreatedStakingPayload = {
     address: string;
-    amount: number;
+    amount?: number;
     txHash: string;
     txDate: Date;
     txType: ETXTYPE;
@@ -24,7 +25,18 @@ export type TGetStakeHistoryPayload = {
     timeStamp: EFilterDate;
 }
 
+export type TGetActivitiesPayload = {
+    offset: number;
+    limit: number;
+    address: string;
+}
+
 export interface IGetStakeHistory {
     xData: string[];
     yData: number[];
+}
+
+export interface IGetUserActivity {
+    count: number;
+    items: Array<Partial<IStakingModel>>
 }
