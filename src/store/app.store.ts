@@ -1,11 +1,12 @@
 import { KART_DENOM, STAKING_ADDR } from "@/constant/token";
-import { TAppState, TAppStore } from "@/types/store";
-import { fin, fromHumanString, msg, toHuman } from "kujira.js";
+import { TAppState, TAppStore } from "./app.type";
+import { fromHumanString, msg, toHuman } from "kujira.js";
 import { create } from "zustand";
 
 import { BigNumber } from "@ethersproject/bignumber";
 import { coin } from "@cosmjs/proto-signing";
-import { STAKING } from "kujira.js/lib/cjs/fin";
+import { stakingApiService } from "@/lib/service";
+import { ETXTYPE } from "@/constant/stake";
 
 const initialState: TAppState = {
   kujiBalance: 0,
@@ -25,8 +26,22 @@ const useAppStore = create<TAppStore>((set, get) => {
         get().actions.setLoading(true);
       },
 
+      async initializeAppInfo() {
+        set({
+          app: initialState,
+        });
+      },
+
       async getUserInfo(owner, query) {
         get().actions.setLoading(true);
+
+        if (!owner) {
+          set({
+            app: initialState,
+          });
+          get().actions.setLoading(false);
+          return;
+        }
 
         try {
           let kujiBalance, kartBalance;
@@ -56,7 +71,7 @@ const useAppStore = create<TAppStore>((set, get) => {
             },
           });
         } catch (err) {
-          console.log(err);
+          console.error(err);
           get().actions.setLoading(false);
         } finally {
           get().actions.setLoading(false);
@@ -80,9 +95,18 @@ const useAppStore = create<TAppStore>((set, get) => {
 
           await get().actions.getUserInfo(sender, query);
           await get().actions.getAppInfo(query);
+          const res = await stakingApiService.stakeToken({
+            address: sender,
+            amount: amount,
+            txHash: tx.transactionHash,
+            txDate: new Date(),
+            txType: ETXTYPE.STAKE
+          })
+          console.log({ res })
         } catch (err) {
-          console.log(err);
+          console.error(err);
           get().actions.setLoading(false);
+          throw err;
         } finally {
           get().actions.setLoading(false);
         }
@@ -105,21 +129,30 @@ const useAppStore = create<TAppStore>((set, get) => {
             funds: [],
           });
 
-          await sign([executeMsg], "Unlock KART");
+          const tx = await sign([executeMsg], "Unlock KART");
 
           await get().actions.getUserInfo(sender, query);
           await get().actions.getAppInfo(query);
+          const res = await stakingApiService.stakeToken({
+            address: sender,
+            amount: amount,
+            txHash: tx.transactionHash,
+            txDate: new Date(),
+            txType: ETXTYPE.UNSTAKE
+          })
+          console.log({ res })
         } catch (err) {
-          console.log(err);
+          console.error(err);
           get().actions.setLoading(false);
+          throw err;
         } finally {
           get().actions.setLoading(false);
         }
       },
 
-      async claim() {},
+      async claim() { },
 
-      async unlock() {},
+      async unlock() { },
 
       setLoading(status: boolean) {
         set({

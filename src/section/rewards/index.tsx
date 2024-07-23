@@ -38,6 +38,7 @@ export default function RewardsSection() {
   const handleRewards = async () => {
     console.log("handle rewards");
   };
+
   return (
     <div className="relative z-10 flex w-full flex-col items-center justify-center px-4 py-5 sm:px-6 sm:pt-0 lg:px-8 sm:mt-24">
       <KartCard className="my-10 flex w-full max-w-lg flex-col items-start gap-y-8 p-8 drop-shadow-16 sm:mb-0">
