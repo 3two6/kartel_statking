@@ -104,6 +104,7 @@ export const CBACKEND_ENDPOINT = {
   staking: {
     base: "/staking",
     create: "/staking/create",
+    history: "/staking/history",
   },
   dashboard: {
     base: "/dashboard",

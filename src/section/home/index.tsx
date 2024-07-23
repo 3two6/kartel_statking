@@ -8,7 +8,7 @@ import {
   chartData,
 } from "../../constant";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAppActions, useAppState } from "@/store/app.store";
 import { toHuman } from "kujira.js";
 import { BigNumber } from "@ethersproject/bignumber";
@@ -16,23 +16,44 @@ import Link from "next/link";
 import { useWallet } from "@/provider/crypto/wallet";
 import { useNetwork } from "@/provider/crypto/network";
 import useToast from "@/hooks/use-toast";
+import { stakingApiService } from "@/lib/service";
 
 export default function HomeSection() {
-  const [selectedDay, setSelectedDay] = useState(EFilterDate.week);
-  const appState = useAppState();
-
-  const { account, signAndBroadcast } = useWallet()
-  const [{ query }] = useNetwork()
-
-  const { withdraw } = useAppActions()
-
   const toast = useToast();
-
+  const [chartTimeStep, setChartTimeStep] = useState(EFilterDate.week);
+  const { signAndBroadcast } = useWallet()
+  const { withdraw } = useAppActions()
+  const [{ query }] = useNetwork()
+  const [chartYData, setChartYData] = useState<number[]>([]);
+  const [chartXData, setChartXData] = useState<string[]>([]);
+  const appState = useAppState();
+  const { account } = useWallet();
   const stakedAmt = toHuman(BigNumber.from(appState.stakedAmt), 6).toFixed(3);
 
-  const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(
-    3,
-  );
+  const fetchStakeHistory = async () => {
+    try {
+      const resStakeHistory = await stakingApiService.getStakeHistory({
+        address: account?.address ?? "",
+        timeStamp: chartTimeStep
+      })
+
+      if (resStakeHistory?.xData && resStakeHistory?.yData && resStakeHistory?.xData.length === resStakeHistory?.yData.length) {
+        setChartXData(resStakeHistory?.xData)
+        setChartYData(resStakeHistory?.yData)
+      }
+
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    if (account?.address) {
+      fetchStakeHistory()
+    }
+  }, [chartTimeStep])
+
+  const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(3);
 
   const handleWithdraw = async () => {
     if (!account) {
@@ -151,8 +172,8 @@ export default function HomeSection() {
                   {Object.values(EFilterDate).map((item, index) => (
                     <button
                       key={index}
-                      className={`rounded-lg text-sm p-1 ${selectedDay === item ? "bg-purple text-white shadow" : "text-gray-300"}`}
-                      onClick={() => setSelectedDay(item)}
+                      className={`rounded-lg text-sm p-1 ${chartTimeStep === item ? "bg-purple text-white shadow" : "text-gray-300"}`}
+                      onClick={() => setChartTimeStep(item)}
                     >
                       {item}
                     </button>
@@ -162,8 +183,8 @@ export default function HomeSection() {
               <div className="flex size-full items-center justify-center h-full">
                 <div className="w-full">
                   <Chart
-                    options={chartData.options}
-                    series={chartData.series}
+                    options={{ ...chartData.options, xaxis: { ...chartData.options.xaxis, categories: chartXData } }}
+                    series={[{ ...chartData.series[0], data: chartYData }]}
                     type="line"
                     width="100%"
                     height="auto"
