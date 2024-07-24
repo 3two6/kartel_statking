@@ -6,9 +6,12 @@ import Chart from "react-apexcharts";
 import {
   EFilterDate,
   chartData,
+  kujirafinderTxHashUrl,
 } from "../../constant";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { ExternalLinkIcon } from "lucide-react";
+import ReactPaginate from "react-paginate";
 import { useAppActions, useAppState } from "@/store/app.store";
 import { toHuman } from "kujira.js";
 import { BigNumber } from "@ethersproject/bignumber";
@@ -18,12 +21,17 @@ import { useWallet } from "@/provider/crypto/wallet";
 import { useNetwork } from "@/provider/crypto/network";
 import useToast from "@/hooks/use-toast";
 import { ETXTYPE } from "@/constant/stake";
-import { addDaysToTimestamp } from "@/lib/utils";
+import { addDaysToTimestamp, formatTimeStamp, formatTxHash } from "@/lib/utils";
+import { IStakingModel } from "@/lib/service/staking.type";
 
 export default function HomeSection() {
   const [chartTimeStep, setChartTimeStep] = useState(EFilterDate.week);
   const [chartXData, setChartXData] = useState<string[]>([]);
   const [chartYData, setChartYData] = useState<number[]>([]);
+
+  const [activityCount, setActivityCount] = useState(0);
+  const [pageNum, setPageNum] = useState(0);
+  const [activityList, setActivityList] = useState<Array<Partial<IStakingModel>>>([]);
 
   const appState = useAppState();
   const stakedAmt = toHuman(BigNumber.from(appState.stakedAmt), 6).toFixed(3);
@@ -53,11 +61,32 @@ export default function HomeSection() {
     }
   }
 
+  const fetchUserActivity = async () => {
+    try {
+      const res = await stakingApiService.getUserActivities({
+        address: account?.address ?? "",
+        offset: pageNum * 10,
+        limit: 10
+      })
+      setActivityCount(res.count)
+      setActivityList(res.items)
+    } catch {
+      toast.error("Network Error")
+    }
+  }
+
   useEffect(() => {
     if (account?.address) {
       fetchStakeHistory()
     }
   }, [chartTimeStep])
+
+  useEffect(() => {
+    if (account?.address) {
+      fetchUserActivity()
+    }
+  }, [pageNum])
+
 
   const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(3);
 
@@ -206,12 +235,12 @@ export default function HomeSection() {
               <Table>
                 <TableHeader>
                   <TableRow className="whitespace-nowrap">
-                    <TableHead className="w-[100px] text-gray-300">
+                    <TableHead className="text-gray-300">
                       Timestamp
                     </TableHead>
                     <TableHead className="text-gray-300">Action</TableHead>
                     <TableHead className="text-gray-300">Amount</TableHead>
-                    <TableHead className="text-gray-300">
+                    <TableHead className="text-gray-300 text-center">
                       Unstaking Period
                     </TableHead>
                     <TableHead className="text-gray-300">
@@ -224,23 +253,52 @@ export default function HomeSection() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {appState.activity.length > 0 && appState.activity.map((item, index) => (
+                  {activityCount > 0 && activityList.map((item, index) => (
                     <TableRow key={index} className="text-white">
-                      <TableCell className="text-gray-400 text-sm">{item.txDate?.toString() ?? "-"}</TableCell>
-                      <TableCell className="text-gray-400 text-sm">{item.txType ?? "-"}</TableCell>
-                      <TableCell className="text-gray-400 text-sm">{item.amount ?? "-"}</TableCell>
-                      <TableCell className="text-center">{item.txType === ETXTYPE.UNSTAKE && "14 Days"}</TableCell>
-                      <TableCell className="text-left">{item.txType === ETXTYPE.UNSTAKE && addDaysToTimestamp(item.txDate?.toString() ?? "-", 14)}</TableCell>
-                      <TableCell className="text-right text-green">success</TableCell>
-                      <TableCell className="flex text-left max-w-56 items-center h-full">
-                        <Link href={`https://finder.kujira.network/harpoon-4/tx/${item.txHash}`} target="_blank" className="truncate text-sm">
-                          {item.txHash ?? '-'}
+                      <TableCell className="text-[#90a4ae] text-sm whitespace-nowrap">{formatTimeStamp(item.txDate?.toString() ?? "-")}</TableCell>
+                      <TableCell className="text-gray-300 text-sm">{item.txType ?? "-"}</TableCell>
+                      <TableCell className="text-gray-300 text-sm">{item.amount ?? "-"}</TableCell>
+                      <TableCell className="text-center text-gray-300">{item.txType === ETXTYPE.UNSTAKE && "10 Days"}</TableCell>
+                      <TableCell className="text-left text-[#90a4ae] whitespace-nowrap">{item.txType === ETXTYPE.UNSTAKE && formatTimeStamp(addDaysToTimestamp(item.txDate?.toString() ?? "-", 14))}</TableCell>
+                      <TableCell className="text-right text-green">
+                        <div className="flex rounded-full items-center justify-center border border-[#00c853] bg-[#00c8531a] text-[#00c853] text-xs px-0.5 py-0.5">success</div>
+                      </TableCell>
+                      <TableCell className="flex text-left max-w-64 items-center h-full">
+                        <Link href={`${kujirafinderTxHashUrl + item.txHash}`} target="_blank" className="truncate text-sm">
+                          {formatTxHash(item.txHash ?? '-')}
                         </Link>
+                        <ExternalLinkIcon className="size-4 text-green ml-2" />
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+              {
+                activityCount > 0 && (
+                  <div className="w-full flex justify-end text-white mr-32">
+                    <ReactPaginate
+                      previousLabel="<<"
+                      nextLabel=">>"
+                      pageClassName="page-item"
+                      pageLinkClassName="page-link"
+                      previousClassName="page-item"
+                      previousLinkClassName="page-link"
+                      nextClassName="page-item"
+                      nextLinkClassName="page-link"
+                      breakLabel="..."
+                      breakClassName="page-item"
+                      breakLinkClassName="page-link"
+                      pageCount={Math.ceil(activityCount / 10)}
+                      marginPagesDisplayed={1}
+                      pageRangeDisplayed={1}
+                      onPageChange={(e) => setPageNum(e.selected)}
+                      containerClassName="pagination"
+                      activeClassName="active"
+                    // forcePage={pageOffset}
+                    />
+                  </div>
+                )
+              }
             </KartCard>
           </div>
         </div>
