@@ -9,7 +9,7 @@ export default function DataContainer() {
     return (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
             <KartCard>
-                <h3 className="font-normal text-gray-300">Market Cap</h3>
+                <h3 className="font-normal text-gray-300">Fully Diluted Value</h3>
                 <div className="text-gray-300 text-2xl">${new Intl.NumberFormat().format(appState.kartPrice * 100000000)}</div>
             </KartCard>
             <KartCard>

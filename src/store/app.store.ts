@@ -107,6 +107,8 @@ const useAppStore = create<TAppStore>((set, get) => {
             return { kartReward, uskReward }
           })
 
+          const resTotalStake = await traitApiService.getTotalStakeAmount()
+
           set({
             app: {
               ...get().app,
@@ -115,6 +117,7 @@ const useAppStore = create<TAppStore>((set, get) => {
               uskBalance: Number(uskBalance ?? 0),
               stakedAmt: stakedAmt?.stake ?? 0,
               rewards: rewards,
+              totalStaked: Number(resTotalStake.value).valueOf() ?? 0,
               claims,
             },
           });
