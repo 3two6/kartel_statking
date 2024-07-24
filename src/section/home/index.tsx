@@ -219,7 +219,20 @@ export default function HomeSection() {
               <div className="flex size-full items-center justify-center h-full">
                 <div className="w-full">
                   <Chart
-                    options={{ ...chartData.options, xaxis: { ...chartData.options.xaxis, categories: chartXData } }}
+                    options={{
+                      ...chartData.options,
+                      xaxis: { ...chartData.options.xaxis, categories: chartXData },
+                      yaxis: {
+                        ...chartData.options.yaxis,
+                        labels: {
+                          show: account ? true : false,
+                          formatter: (value) => `$${value.toFixed(2)}`,
+                          style: {
+                            colors: '#d3d3d3'
+                          }
+                        }
+                      }
+                    }}
                     series={[{ ...chartData.series[0], data: chartYData }]}
                     type="line"
                     width="100%"
