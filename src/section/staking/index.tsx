@@ -24,7 +24,7 @@ export default function StakingSection() {
   const { account, signAndBroadcast } = useWallet();
 
   const appState = useAppState();
-  const { bond, unbond, claim } = useAppActions();
+  const { bond, unbond, claim, getAppInfo } = useAppActions();
 
   const toast = useToast();
   const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(2);
@@ -54,6 +54,7 @@ export default function StakingSection() {
     }
     try {
       await bond(parseFloat(amount), account.address, signAndBroadcast, query);
+      await getAppInfo(query);
       toast.success("Stake KART success");
     } catch (err) {
       toast.error("User rejected transaction");
@@ -83,6 +84,7 @@ export default function StakingSection() {
 
     try {
       await unbond(parseFloat(amount), account.address, signAndBroadcast, query);
+      await getAppInfo(query);
       toast.success("Unstake KART success");
     } catch (err) {
       toast.error("User rejected transaction");
@@ -102,6 +104,7 @@ export default function StakingSection() {
 
     try {
       await claim(account.address, signAndBroadcast, query);
+      await getAppInfo(query);
       toast.success("Claim KART released");
     } catch (err) {
       toast.error("User rejected transaction");
