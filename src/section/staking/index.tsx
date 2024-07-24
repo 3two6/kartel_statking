@@ -6,7 +6,7 @@ import { StakingOptions } from "../../constant";
 import { useAppActions, useAppState } from "@/store/app.store";
 import { toHuman } from "kujira.js";
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { BigNumber } from "@ethersproject/bignumber";
 import { useNetwork } from "@/provider/crypto/network";
 import { useWallet } from "@/provider/crypto/wallet";
@@ -25,6 +25,17 @@ export default function StakingSection() {
 
   const appState = useAppState();
   const { bond, unbond, claim, getAppInfo } = useAppActions();
+
+  const claimable = useMemo(() => {
+    if (appState.claims.length > 0) {
+      appState.claims.map((claim) => {
+        if (parseInt(claim.release_at) / 1_000_000 > Date.now()) return true
+      })
+      return false
+    }
+    return false
+
+  }, [appState.claims])
 
   const toast = useToast();
   const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(2);
@@ -100,6 +111,11 @@ export default function StakingSection() {
     if (!query) {
       toast.error("Network Error");
       return;
+    }
+
+    if (!claimable) {
+      toast.error("Claim after pending period")
+      return
     }
 
     try {
