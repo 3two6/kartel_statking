@@ -106,9 +106,10 @@ export default function HomeSection() {
                   <div className="hidden items-center gap-x-3 sm:flex">
                     <Image
                       alt="kart Logo inverted"
-                      width={32}
-                      height={32}
+                      width={100}
+                      height={100}
                       src="/images/logo.png"
+                      className="w-8 h-8"
                     />
                     <p className="font-bold text-gray-300">KART</p>
                   </div>
