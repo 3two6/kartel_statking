@@ -38,8 +38,8 @@ export default function StakingSection() {
   }, [appState.claims])
 
   const toast = useToast();
-  const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(2);
-  const stakedKartBalance = toHuman(BigNumber.from(appState.stakedAmt), 6).toFixed(2);
+  const kartBalance = (Math.floor(toHuman(BigNumber.from(appState.kartBalance), 6) * 100) / 100).toString();
+  const stakedKartBalance = (Math.floor(toHuman(BigNumber.from(appState.stakedAmt), 6) * 100) / 100).toString();
   const avaliableBalance = selectedOption === StakingOptions[1].value ? stakedKartBalance : kartBalance
 
 
