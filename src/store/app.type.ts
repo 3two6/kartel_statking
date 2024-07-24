@@ -24,7 +24,6 @@ export type TAppState = {
   rewards: { uskReward: number, kartReward: number };
   claims: Array<{ amount: string; release_at: string }>;
   totalStaked: number;
-  activity: Array<Partial<IStakingModel>>;
   loading: boolean;
 };
 
