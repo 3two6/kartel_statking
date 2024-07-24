@@ -3,7 +3,6 @@ import { useAppState } from "@/store/app.store";
 
 export default function DataContainer() {
 
-
     const appState = useAppState()
 
     return (
@@ -26,7 +25,7 @@ export default function DataContainer() {
             </KartCard>
             <KartCard>
                 <h3 className="font-normal text-gray-300">Total Staked</h3>
-                <div className="text-gray-300 text-2xl">{appState.totalStaked} KART</div>
+                <div className="text-gray-300 text-2xl">{appState.totalStaked.toFixed(2)} KART</div>
             </KartCard>
             {/* <KartCard className="gap-3">
                 <div className="flex w-full flex-col items-center gap-y-2 sm:items-start">
