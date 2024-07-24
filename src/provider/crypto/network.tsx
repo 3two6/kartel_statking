@@ -103,7 +103,6 @@ export const NetworkContext: React.FC<
   const [preferred, setPreferred] = useLocalStorage("rpc", "");
   const [tm, setTmClient] = useState<null | [Tendermint37Client, string]>();
   const [latencies, setLatencies] = useState<Record<string, RPCConnection>>({});
-
   const tmClient = tm && tm[0];
   useEffect(() => {
     if (preferred) {

@@ -10,6 +10,8 @@ import {
 } from "../../constant";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { ExternalLinkIcon } from "lucide-react";
+import ReactPaginate from "react-paginate";
 import { useAppActions, useAppState } from "@/store/app.store";
 import { toHuman } from "kujira.js";
 import { BigNumber } from "@ethersproject/bignumber";
@@ -20,11 +22,16 @@ import { useNetwork } from "@/provider/crypto/network";
 import useToast from "@/hooks/use-toast";
 import { ETXTYPE } from "@/constant/stake";
 import { addDaysToTimestamp, formatTimeStamp, formatTxHash } from "@/lib/utils";
+import { IStakingModel } from "@/lib/service/staking.type";
 
 export default function HomeSection() {
   const [chartTimeStep, setChartTimeStep] = useState(EFilterDate.week);
   const [chartXData, setChartXData] = useState<string[]>([]);
   const [chartYData, setChartYData] = useState<number[]>([]);
+
+  const [activityCount, setActivityCount] = useState(0);
+  const [pageNum, setPageNum] = useState(0);
+  const [activityList, setActivityList] = useState<Array<Partial<IStakingModel>>>([]);
 
   const appState = useAppState();
   const stakedAmt = toHuman(BigNumber.from(appState.stakedAmt), 6).toFixed(3);
@@ -44,8 +51,9 @@ export default function HomeSection() {
       })
 
       if (resStakeHistory?.xData && resStakeHistory?.yData && resStakeHistory?.xData.length === resStakeHistory?.yData.length) {
+        const usdYdata = resStakeHistory?.yData.map(item => Number((item * appState.kartPrice).toFixed(3)))
         setChartXData(resStakeHistory?.xData)
-        setChartYData(resStakeHistory?.yData)
+        setChartYData(usdYdata)
       }
 
 
@@ -54,11 +62,32 @@ export default function HomeSection() {
     }
   }
 
+  const fetchUserActivity = async () => {
+    try {
+      const res = await stakingApiService.getUserActivities({
+        address: account?.address ?? "",
+        offset: pageNum * 10,
+        limit: 10
+      })
+      setActivityCount(res.count)
+      setActivityList(res.items)
+    } catch {
+      toast.error("Network Error")
+    }
+  }
+
   useEffect(() => {
     if (account?.address) {
       fetchStakeHistory()
     }
   }, [chartTimeStep])
+
+  useEffect(() => {
+    if (account?.address) {
+      fetchUserActivity()
+    }
+  }, [pageNum])
+
 
   const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(3);
 
@@ -89,7 +118,7 @@ export default function HomeSection() {
           <div className="flex flex-col gap-y-5 lg:col-span-1">
             <KartCard>
               <h1 className="font-light text-gray-300">Rewards earned daily</h1>
-              <p className="pt-3 text-lg text-gray-300">{0} USD</p>
+              <p className="pt-3 text-lg text-gray-300">~ USD</p>
             </KartCard>
             <KartCard>
               <h1 className="font-light text-gray-300">KART Price</h1>
@@ -153,7 +182,7 @@ export default function HomeSection() {
                 <div className="flex w-1/2 flex-col items-center justify-between rounded-lg border border-purple-border p-5 gap-3">
                   <h2 className=" text-gray-300">My Rewards</h2>
                   <div className="flex flex-col items-center">
-                    <p className="pb-2 font-semibold text-gray-300">$0</p>
+                    <p className="pb-2 font-semibold text-gray-300">${(appState.rewards.kartReward * appState.kartPrice + appState.rewards.uskReward).toFixed(2)}</p>
                     <div className="flex flex-row gap-3">
                       <p className="text-gray-300 text-xs">{appState.rewards.kartReward} <span className="text-xs">KART,</span></p>
                       <p className="text-gray-300 text-xs">{appState.rewards.uskReward} <span className="text-xs">USK</span></p>
@@ -226,25 +255,52 @@ export default function HomeSection() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {appState.activity.length > 0 && appState.activity.map((item, index) => (
+                  {activityCount > 0 && activityList.map((item, index) => (
                     <TableRow key={index} className="text-white">
                       <TableCell className="text-[#90a4ae] text-sm whitespace-nowrap">{formatTimeStamp(item.txDate?.toString() ?? "-")}</TableCell>
                       <TableCell className="text-gray-300 text-sm">{item.txType ?? "-"}</TableCell>
                       <TableCell className="text-gray-300 text-sm">{item.amount ?? "-"}</TableCell>
                       <TableCell className="text-center text-gray-300">{item.txType === ETXTYPE.UNSTAKE && "10 Days"}</TableCell>
-                      <TableCell className="text-left text-[#90a4ae] whitespace-nowrap">{item.txType === ETXTYPE.UNSTAKE && formatTimeStamp(addDaysToTimestamp(item.txDate?.toString() ?? "-", 14))}</TableCell>
+                      <TableCell className="text-left text-[#90a4ae] whitespace-nowrap">{item.txType === ETXTYPE.UNSTAKE && formatTimeStamp(addDaysToTimestamp(item.txDate?.toString() ?? "-", 10))}</TableCell>
                       <TableCell className="text-right text-green">
                         <div className="flex rounded-full items-center justify-center border border-[#00c853] bg-[#00c8531a] text-[#00c853] text-xs px-0.5 py-0.5">success</div>
                       </TableCell>
-                      <TableCell className="flex text-left max-w-64 items-center h-full">
+                      <TableCell className="flex text-left max-w-64 items-center h-full cursor-pointer">
                         <Link href={`${kujirafinderTxHashUrl + item.txHash}`} target="_blank" className="truncate text-sm">
                           {formatTxHash(item.txHash ?? '-')}
                         </Link>
+                        <ExternalLinkIcon className="size-4 text-green ml-2" />
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+              {
+                activityCount > 0 && (
+                  <div className="w-full flex justify-end text-white mr-32">
+                    <ReactPaginate
+                      previousLabel="<<"
+                      nextLabel=">>"
+                      pageClassName="page-item"
+                      pageLinkClassName="page-link"
+                      previousClassName="page-item"
+                      previousLinkClassName="page-link"
+                      nextClassName="page-item"
+                      nextLinkClassName="page-link"
+                      breakLabel="..."
+                      breakClassName="page-item"
+                      breakLinkClassName="page-link"
+                      pageCount={Math.ceil(activityCount / 10)}
+                      marginPagesDisplayed={1}
+                      pageRangeDisplayed={1}
+                      onPageChange={(e) => setPageNum(e.selected)}
+                      containerClassName="pagination"
+                      activeClassName="active"
+                    // forcePage={pageOffset}
+                    />
+                  </div>
+                )
+              }
             </KartCard>
           </div>
         </div>
