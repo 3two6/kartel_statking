@@ -99,7 +99,7 @@ export const NetworkContext: React.FC<
     onError?: (err: any) => void;
   }>
 > = ({ children, onError }) => {
-  const [network, setNetwork] = useLocalStorage("network", MAINNET);
+  const [network, setNetwork] = useLocalStorage("network", isProduction ? MAINNET : TESTNET);
   const [preferred, setPreferred] = useLocalStorage("rpc", "");
   const [tm, setTmClient] = useState<null | [Tendermint37Client, string]>();
   const [latencies, setLatencies] = useState<Record<string, RPCConnection>>({});
