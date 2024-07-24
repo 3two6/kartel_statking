@@ -29,7 +29,7 @@ const tokenList: ITokenList[] = [
     image: "/images/tokens/leap.svg",
   },
   {
-    name: "Cosmotation",
+    name: "Cosmostation",
     image: "/images/tokens/cosmostation.svg",
   },
 ];
@@ -69,7 +69,7 @@ export default function ConnectWallet() {
           setLoading((prev) => ({ ...prev, leap: true }));
           await connect(Adapter.Leap);
           break;
-        case "Cosmotation":
+        case "Cosmostation":
           if (!window.station) {
             window.open(CWalletLink.cosmostation, "_blank");
             return;
@@ -136,7 +136,7 @@ export default function ConnectWallet() {
                 ) : (
                   <Download className="h-5 w-5 text-white" />
                 ))}
-              {item.name === "Cosmotation" &&
+              {item.name === "Cosmostation" &&
                 !loading.cosmostation &&
                 (window.station ? (
                   <ChevronRight className="h-5 w-5 text-white" />
@@ -145,7 +145,7 @@ export default function ConnectWallet() {
                 ))}
               {item.name === "Keplr" && loading.keplr && <LoadingIcon />}
               {item.name === "Leap" && loading.leap && <LoadingIcon />}
-              {item.name === "Cosmotation" && loading.cosmostation && (
+              {item.name === "Cosmostation" && loading.cosmostation && (
                 <LoadingIcon />
               )}
             </button>
