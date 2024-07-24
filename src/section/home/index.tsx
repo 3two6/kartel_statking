@@ -153,7 +153,7 @@ export default function HomeSection() {
                   <div className="flex flex-col items-center">
                     <p className="text-gray-300 font-light">Staking APR</p>
                     <p className="text-sm font-semibold text-gray-300">
-                      12.64 %
+                      0 %
                     </p>
                   </div>
                   <div className="flex flex-col items-center">
