@@ -17,7 +17,6 @@ const initialState: TAppState = {
   totalStaked: 0,
   rewards: { uskReward: 0, kartReward: 0 },
   claims: [],
-  activity: [],
   loading: false,
 };
 
@@ -56,12 +55,6 @@ const useAppStore = create<TAppStore>((set, get) => {
 
       async getUserInfo(owner, query) {
         get().actions.setLoading(true);
-        const resUserActivities = await stakingApiService.getUserActivities({
-          address: owner,
-          limit: 10,
-          offset: 0
-        })
-
         if (!owner) {
           set({
             app: initialState,
@@ -71,7 +64,7 @@ const useAppStore = create<TAppStore>((set, get) => {
         }
 
         try {
-          let kujiBalance, kartBalance, uskBalance;
+          let kujiBalance = "0", kartBalance = "0", uskBalance = "0";
 
           await query.bank.allBalances(owner).then((x) => {
             x?.map((b) => {
@@ -114,6 +107,8 @@ const useAppStore = create<TAppStore>((set, get) => {
             return { kartReward, uskReward }
           })
 
+          const resTotalStake = await traitApiService.getTotalStakeAmount()
+
           set({
             app: {
               ...get().app,
@@ -122,7 +117,7 @@ const useAppStore = create<TAppStore>((set, get) => {
               uskBalance: Number(uskBalance ?? 0),
               stakedAmt: stakedAmt?.stake ?? 0,
               rewards: rewards,
-              activity: resUserActivities.items,
+              totalStaked: Number(resTotalStake.value).valueOf() ?? 0,
               claims,
             },
           });

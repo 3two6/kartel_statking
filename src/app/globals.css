@@ -311,3 +311,40 @@ input::-webkit-inner-spin-button {
     stroke-dashoffset: -125px;
   }
 }
+
+/* react-paginate */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: .5rem;
+}
+
+.page-item {
+  padding: 0.5rem;
+  border-radius: 0.3rem;
+  border: 1px solid #4b34a7;
+  color: white;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  justify-content: center;
+  font-size: 0.8rem;
+  user-select: none;
+}
+
+.page-item.active {
+  background-color: #4b34a7;
+}
+
+
+.page-item:last-child a.page-link,
+.page-item:first-child a.page-link {
+  font-family: cursive;
+}
+
+.page-item a.page-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
