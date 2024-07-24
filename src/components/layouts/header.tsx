@@ -27,9 +27,9 @@ export default function Header() {
                 <Link href="/" className="flex flex-row items-center gap-5">
                     <Image
                         alt="Kart Logo"
-                        width={136}
-                        height={30}
-                        className="w-fit h-10"
+                        width={100}
+                        height={100}
+                        className="w-10 h-10"
                         src="/images/logo.png"
                         priority
                     />
