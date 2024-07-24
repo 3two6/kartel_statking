@@ -180,7 +180,7 @@ export default function HomeSection() {
                 <div className="flex w-1/2 flex-col items-center justify-between rounded-lg border border-purple-border p-5 gap-3">
                   <h2 className=" text-gray-300">My Rewards</h2>
                   <div className="flex flex-col items-center">
-                    <p className="pb-2 font-semibold text-gray-300">$0</p>
+                    <p className="pb-2 font-semibold text-gray-300">${(appState.rewards.kartReward * appState.kartPrice).toFixed(2)}</p>
                     <div className="flex flex-row gap-3">
                       <p className="text-gray-300 text-xs">{appState.rewards.kartReward} <span className="text-xs">KART,</span></p>
                       <p className="text-gray-300 text-xs">{appState.rewards.uskReward} <span className="text-xs">USK</span></p>
@@ -263,7 +263,7 @@ export default function HomeSection() {
                       <TableCell className="text-right text-green">
                         <div className="flex rounded-full items-center justify-center border border-[#00c853] bg-[#00c8531a] text-[#00c853] text-xs px-0.5 py-0.5">success</div>
                       </TableCell>
-                      <TableCell className="flex text-left max-w-64 items-center h-full">
+                      <TableCell className="flex text-left max-w-64 items-center h-full cursor-pointer">
                         <Link href={`${kujirafinderTxHashUrl + item.txHash}`} target="_blank" className="truncate text-sm">
                           {formatTxHash(item.txHash ?? '-')}
                         </Link>
