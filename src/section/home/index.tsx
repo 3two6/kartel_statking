@@ -51,7 +51,7 @@ export default function HomeSection() {
       })
 
       if (resStakeHistory?.xData && resStakeHistory?.yData && resStakeHistory?.xData.length === resStakeHistory?.yData.length) {
-        const usdYdata = resStakeHistory?.yData.map(item => item * appState.kartPrice)
+        const usdYdata = resStakeHistory?.yData.map(item => Number((item * appState.kartPrice).toFixed(3)))
         setChartXData(resStakeHistory?.xData)
         setChartYData(usdYdata)
       }
@@ -118,7 +118,7 @@ export default function HomeSection() {
           <div className="flex flex-col gap-y-5 lg:col-span-1">
             <KartCard>
               <h1 className="font-light text-gray-300">Rewards earned daily</h1>
-              <p className="pt-3 text-lg text-gray-300">{0} USD</p>
+              <p className="pt-3 text-lg text-gray-300">~ USD</p>
             </KartCard>
             <KartCard>
               <h1 className="font-light text-gray-300">KART Price</h1>
@@ -181,7 +181,7 @@ export default function HomeSection() {
                 <div className="flex w-1/2 flex-col items-center justify-between rounded-lg border border-purple-border p-5 gap-3">
                   <h2 className=" text-gray-300">My Rewards</h2>
                   <div className="flex flex-col items-center">
-                    <p className="pb-2 font-semibold text-gray-300">${(appState.rewards.kartReward * appState.kartPrice).toFixed(2)}</p>
+                    <p className="pb-2 font-semibold text-gray-300">${(appState.rewards.kartReward * appState.kartPrice + appState.rewards.uskReward).toFixed(2)}</p>
                     <div className="flex flex-row gap-3">
                       <p className="text-gray-300 text-xs">{appState.rewards.kartReward} <span className="text-xs">KART,</span></p>
                       <p className="text-gray-300 text-xs">{appState.rewards.uskReward} <span className="text-xs">USK</span></p>
