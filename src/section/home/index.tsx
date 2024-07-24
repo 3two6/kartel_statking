@@ -10,6 +10,8 @@ import {
 } from "../../constant";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { ExternalLinkIcon } from "lucide-react";
+import ReactPaginate from "react-paginate";
 import { useAppActions, useAppState } from "@/store/app.store";
 import { toHuman } from "kujira.js";
 import { BigNumber } from "@ethersproject/bignumber";
@@ -20,11 +22,16 @@ import { useNetwork } from "@/provider/crypto/network";
 import useToast from "@/hooks/use-toast";
 import { ETXTYPE } from "@/constant/stake";
 import { addDaysToTimestamp, formatTimeStamp, formatTxHash } from "@/lib/utils";
+import { IStakingModel } from "@/lib/service/staking.type";
 
 export default function HomeSection() {
   const [chartTimeStep, setChartTimeStep] = useState(EFilterDate.week);
   const [chartXData, setChartXData] = useState<string[]>([]);
   const [chartYData, setChartYData] = useState<number[]>([]);
+
+  const [activityCount, setActivityCount] = useState(0);
+  const [pageNum, setPageNum] = useState(0);
+  const [activityList, setActivityList] = useState<Array<Partial<IStakingModel>>>([]);
 
   const appState = useAppState();
   const stakedAmt = toHuman(BigNumber.from(appState.stakedAmt), 6).toFixed(3);
@@ -54,11 +61,32 @@ export default function HomeSection() {
     }
   }
 
+  const fetchUserActivity = async () => {
+    try {
+      const res = await stakingApiService.getUserActivities({
+        address: account?.address ?? "",
+        offset: pageNum * 10,
+        limit: 10
+      })
+      setActivityCount(res.count)
+      setActivityList(res.items)
+    } catch {
+      toast.error("Network Error")
+    }
+  }
+
   useEffect(() => {
     if (account?.address) {
       fetchStakeHistory()
     }
   }, [chartTimeStep])
+
+  useEffect(() => {
+    if (account?.address) {
+      fetchUserActivity()
+    }
+  }, [pageNum])
+
 
   const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(3);
 
@@ -225,7 +253,7 @@ export default function HomeSection() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {appState.activity.length > 0 && appState.activity.map((item, index) => (
+                  {activityCount > 0 && activityList.map((item, index) => (
                     <TableRow key={index} className="text-white">
                       <TableCell className="text-[#90a4ae] text-sm whitespace-nowrap">{formatTimeStamp(item.txDate?.toString() ?? "-")}</TableCell>
                       <TableCell className="text-gray-300 text-sm">{item.txType ?? "-"}</TableCell>
@@ -239,11 +267,38 @@ export default function HomeSection() {
                         <Link href={`${kujirafinderTxHashUrl + item.txHash}`} target="_blank" className="truncate text-sm">
                           {formatTxHash(item.txHash ?? '-')}
                         </Link>
+                        <ExternalLinkIcon className="size-4 text-green ml-2" />
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+              {
+                activityCount > 0 && (
+                  <div className="w-full flex justify-end text-white mr-32">
+                    <ReactPaginate
+                      previousLabel="<<"
+                      nextLabel=">>"
+                      pageClassName="page-item"
+                      pageLinkClassName="page-link"
+                      previousClassName="page-item"
+                      previousLinkClassName="page-link"
+                      nextClassName="page-item"
+                      nextLinkClassName="page-link"
+                      breakLabel="..."
+                      breakClassName="page-item"
+                      breakLinkClassName="page-link"
+                      pageCount={Math.ceil(activityCount / 10)}
+                      marginPagesDisplayed={1}
+                      pageRangeDisplayed={1}
+                      onPageChange={(e) => setPageNum(e.selected)}
+                      containerClassName="pagination"
+                      activeClassName="active"
+                    // forcePage={pageOffset}
+                    />
+                  </div>
+                )
+              }
             </KartCard>
           </div>
         </div>

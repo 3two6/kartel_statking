@@ -27,7 +27,6 @@ export default function StakingSection() {
   const { bond, unbond, claim } = useAppActions();
 
   const toast = useToast();
-
   const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(2);
   const stakedKartBalance = toHuman(BigNumber.from(appState.stakedAmt), 6).toFixed(2);
   const avaliableBalance = selectedOption === StakingOptions[1].value ? stakedKartBalance : kartBalance
@@ -142,7 +141,7 @@ export default function StakingSection() {
             </button>
           ))}
         </div>
-        <div className={`flex w-full flex-col gap-5 ${selectedOption === StakingOptions[2].value && "h-48"}`}>
+        <div className={`flex w-full flex-col gap-5 `}>
           {
             selectedOption !== StakingOptions[2].value ? (
               <>
@@ -209,14 +208,16 @@ export default function StakingSection() {
                 {
                   appState.claims.length === 0 ?
                     (<></>) :
-                    (<div>
+                    (<div >
                       <span className="text-white text-sm">Unstaking Process</span>
-                      {appState.claims.map((claim, index) => (
-                        <div key={index} className="text-white w-full flex justify-between py-3 text-base">
-                          <span>{claim.amount} KART</span>
-                          <span>{new Date(parseInt(claim.release_at) / 1_000_000).toLocaleString()}</span>
-                        </div>
-                      ))}
+                      <div className="max-h-48 overflow-y-auto">
+                        {appState.claims.map((claim, index) => (
+                          <div key={index} className={`text-white w-full flex justify-between py-3 text-base `}>
+                            <span>{claim.amount} KART</span>
+                            <span>{new Date(parseInt(claim.release_at) / 1_000_000).toLocaleString()}</span>
+                          </div>
+                        ))}
+                      </div>
                       <button
                         className={`flex flex-row gap-4 justify-center bg-purple border w-full rounded py-3 mt-5 text-gray-300 transition-all duration-100 ease-in-out  bg-transparent border-purple-border`}
                         onClick={
