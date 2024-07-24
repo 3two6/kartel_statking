@@ -77,7 +77,7 @@ export const chartData = {
   },
   series: [
     {
-      name: "KART",
+      name: "USD",
       data: [0, 2, 3, 4, 5, 6, 7, 10],
       color: "#A326D4",
       labels: {
@@ -114,4 +114,4 @@ export const CBACKEND_ENDPOINT = {
   }
 };
 
-export const kujirafinderTxHashUrl = "https://finder.kujira.network/harpoon-4/tx/";
+export const kujirafinderTxHashUrl = "https://finder.kujira.network/kaiyo-1/tx/";
