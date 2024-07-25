@@ -109,8 +109,11 @@ const useAppStore = create<TAppStore>((set, get) => {
             }
             return { kartReward, uskReward }
           })
-
+          const resKartPrice = await traitApiService.getKartCurrency()
           const resTotalStake = await traitApiService.getTotalStakeAmount()
+          const resTotalReward = await traitApiService.getTotalRewardAmount()
+          const rewardUsd = Number(resTotalReward?.value?.kart ?? 0) * Number(resKartPrice.value ?? 0.04) + Number(resTotalReward?.value?.usk ?? 0)
+
 
           set({
             app: {
@@ -120,8 +123,10 @@ const useAppStore = create<TAppStore>((set, get) => {
               uskBalance: Number(uskBalance ?? 0),
               stakedAmt: stakedAmt?.stake ?? 0,
               rewards: rewards,
-              totalStaked: Number(resTotalStake.value).valueOf() ?? 0,
               claims,
+              kartPrice: Number(resKartPrice.value ?? 0.04),
+              totalStaked: Number(resTotalStake.value ?? 0),
+              totalReward: rewardUsd
             },
           });
         } catch (err) {
@@ -148,6 +153,7 @@ const useAppStore = create<TAppStore>((set, get) => {
 
           await get().actions.getUserInfo(sender, query);
           await get().actions.getAppInfo(query);
+
           await stakingApiService.stakeToken({
             address: sender,
             amount: amount,
