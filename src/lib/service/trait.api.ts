@@ -1,6 +1,6 @@
 import { CBACKEND_ENDPOINT } from "@/constant";
 import { axiosGet } from "../axios";
-import { ITraitValue } from "./trait.type";
+import { ITotalRewardRes, ITraitValue } from "./trait.type";
 
 export const getKartCurrency: () => Promise<ITraitValue> = async () => {
     try {
@@ -16,6 +16,16 @@ export const getKartCurrency: () => Promise<ITraitValue> = async () => {
 export const getTotalStakeAmount: () => Promise<ITraitValue> = async () => {
     try {
         const result = await axiosGet(CBACKEND_ENDPOINT.trait.totalStake)
+        return result
+    } catch (error) {
+        console.error(error)
+        throw error
+    }
+}
+
+export const getTotalRewardAmount: () => Promise<ITotalRewardRes> = async () => {
+    try {
+        const result = await axiosGet(CBACKEND_ENDPOINT.trait.totalReward)
         return result
     } catch (error) {
         console.error(error)

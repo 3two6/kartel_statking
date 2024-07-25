@@ -11,3 +11,10 @@ export interface ITraitModel extends IBasicModel {
 export interface ITraitValue {
     value: string;
 }
+
+export interface ITotalRewardRes {
+    value: {
+        usk: string;
+        kart: string;
+    };
+}

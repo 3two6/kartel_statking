@@ -34,7 +34,7 @@ export default function RewardsSection() {
   const appState = useAppState();
   const toast = useToast();
   const [selectedToken, setSelectedToken] = useState(token[0]);
-  const [month, setMonth] = useState<number>(1);
+  const [month, setMonth] = useState<number>(0);
   const [amount, setAmount] = useState("0");
 
   const { addReward } = useAppActions()
@@ -42,13 +42,8 @@ export default function RewardsSection() {
   const { account, signAndBroadcast } = useWallet()
   const [{ query }] = useNetwork()
 
-  const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(
-    3,
-  );
-
-  const uskBalance = toHuman(BigNumber.from(appState.uskBalance), 6).toFixed(
-    3,
-  );
+  const kartBalance = ((Math.floor(toHuman(BigNumber.from(appState.kartBalance), 6)) * 1000) / 1000).toString()
+  const uskBalance = ((Math.floor(toHuman(BigNumber.from(appState.uskBalance), 6)) * 1000) / 1000).toString()
 
   const handleRewards = async () => {
     if (!account) {
@@ -66,6 +61,11 @@ export default function RewardsSection() {
       return;
     }
 
+    if (month === 0) {
+      toast.error("Please select the period");
+      return;
+    }
+
     if (selectedToken.denom === USK_DENOM && (parseFloat(amount) > parseFloat(uskBalance))) {
       toast.error("Insufficient balance to reward");
       return;
@@ -77,7 +77,6 @@ export default function RewardsSection() {
     }
 
     try {
-
       const startDate = new Date()
       const endDate = addMonthsToDate(startDate, month)
       await addReward(

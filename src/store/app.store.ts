@@ -15,6 +15,7 @@ const initialState: TAppState = {
   kartPrice: 0,
   stakedAmt: 0,
   totalStaked: 0,
+  totalReward: 0,
   rewards: { uskReward: 0, kartReward: 0 },
   claims: [],
   loading: false,
@@ -30,12 +31,15 @@ const useAppStore = create<TAppStore>((set, get) => {
         try {
           const resKartPrice = await traitApiService.getKartCurrency()
           const resTotalStake = await traitApiService.getTotalStakeAmount()
-
+          const resTotalReward = await traitApiService.getTotalRewardAmount()
+          const rewardUsd = Number(resTotalReward?.value?.kart ?? 0) * Number(resKartPrice.value ?? 0.04) + Number(resTotalReward?.value?.usk ?? 0)
+          console.log({ resTotalReward })
           set({
             app: {
               ...get().app,
-              kartPrice: Number(resKartPrice.value ?? 0.046),
+              kartPrice: Number(resKartPrice.value ?? 0.04),
               totalStaked: Number(resTotalStake.value ?? 0),
+              totalReward: rewardUsd
             },
           });
 
@@ -266,7 +270,23 @@ const useAppStore = create<TAppStore>((set, get) => {
           });
 
           const tx = await sign([executeMsg], "Add Rewards");
-
+          if (denom === KART_DENOM) {
+            await stakingApiService.stakeToken({
+              address: sender,
+              amount: amount,
+              txHash: tx.transactionHash,
+              txDate: new Date(),
+              txType: ETXTYPE.ADDREWARD_KART
+            })
+          } else {
+            await stakingApiService.stakeToken({
+              address: sender,
+              amount: amount,
+              txHash: tx.transactionHash,
+              txDate: new Date(),
+              txType: ETXTYPE.ADDREWARD_USK
+            })
+          }
           await get().actions.getUserInfo(sender, query);
           await get().actions.getAppInfo(query);
         } catch (err) {
