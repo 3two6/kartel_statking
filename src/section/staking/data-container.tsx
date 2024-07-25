@@ -5,7 +5,7 @@ export default function DataContainer() {
 
     const appState = useAppState()
 
-    const aprValue = (appState.totalReward / (Math.max(appState.totalStaked, 1) * appState.kartPrice)) * 100
+    const aprValue = (appState.totalReward / (Math.max(appState.totalStaked, 1) * appState.kartPrice)) * 100 * 12
 
     return (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">

@@ -90,7 +90,7 @@ export default function HomeSection() {
 
 
   const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(3);
-  const aprValue = (appState.totalReward / (Math.max(appState.totalStaked, 1) * appState.kartPrice)) * 100
+  const aprValue = (appState.totalReward / (Math.max(appState.totalStaked, 1) * appState.kartPrice)) * 100 * 12
 
   const handleWithdraw = async () => {
     if (!account) {
