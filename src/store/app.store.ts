@@ -33,7 +33,6 @@ const useAppStore = create<TAppStore>((set, get) => {
           const resTotalStake = await traitApiService.getTotalStakeAmount()
           const resTotalReward = await traitApiService.getTotalRewardAmount()
           const rewardUsd = Number(resTotalReward?.value?.kart ?? 0) * Number(resKartPrice.value ?? 0.04) + Number(resTotalReward?.value?.usk ?? 0)
-          console.log({ resTotalReward })
           set({
             app: {
               ...get().app,
