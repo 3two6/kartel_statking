@@ -111,6 +111,7 @@ export const CBACKEND_ENDPOINT = {
     base: "/trait",
     kartCurrency: "/trait/kart/currency",
     totalStake: "/trait/kart/total-stake",
+    totalReward: "/trait/stake/total-reward",
   }
 };
 

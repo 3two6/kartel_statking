@@ -4,6 +4,9 @@ import { useAppState } from "@/store/app.store";
 export default function DataContainer() {
 
     const appState = useAppState()
+
+    const aprValue = (appState.totalReward / (Math.max(appState.totalStaked, 1) * appState.kartPrice)) * 100
+
     return (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
             <KartCard>
@@ -16,7 +19,7 @@ export default function DataContainer() {
             </KartCard>
             <KartCard>
                 <h3 className="font-normal text-gray-300">Staking APR</h3>
-                <div className="text-gray-300 text-2xl">0 %</div>
+                <div className="text-gray-300 text-2xl">{aprValue.toFixed(4)} %</div>
             </KartCard>
             <KartCard>
                 <h3 className="font-normal text-gray-300">KART Price</h3>

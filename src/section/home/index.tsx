@@ -90,6 +90,7 @@ export default function HomeSection() {
 
 
   const kartBalance = toHuman(BigNumber.from(appState.kartBalance), 6).toFixed(3);
+  const aprValue = (appState.totalReward / (Math.max(appState.totalStaked, 1) * appState.kartPrice)) * 100
 
   const handleWithdraw = async () => {
     if (!account) {
@@ -153,7 +154,7 @@ export default function HomeSection() {
                   <div className="flex flex-col items-center">
                     <p className="text-gray-300 font-light">Staking APR</p>
                     <p className="text-sm font-semibold text-gray-300">
-                      0 %
+                      {aprValue.toFixed(4)} %
                     </p>
                   </div>
                   <div className="flex flex-col items-center">
