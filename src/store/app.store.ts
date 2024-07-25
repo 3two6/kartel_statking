@@ -32,12 +32,12 @@ const useAppStore = create<TAppStore>((set, get) => {
           const resKartPrice = await traitApiService.getKartCurrency()
           const resTotalStake = await traitApiService.getTotalStakeAmount()
           const resTotalReward = await traitApiService.getTotalRewardAmount()
-          const rewardUsd = Number(resTotalReward?.value?.kart ?? 0) * Number(resKartPrice.value ?? 0.04) + Number(resTotalReward?.value?.usk ?? 0)
+          const rewardUsd = parseFloat(resTotalReward?.value?.kart?.replace(/,/g, '') ?? 0) * parseFloat(resKartPrice?.value?.replace(/,/g, '') ?? 0.04) + parseFloat(resTotalReward?.value?.usk?.replace(/,/g, '') ?? 0)
           set({
             app: {
               ...get().app,
-              kartPrice: Number(resKartPrice.value ?? 0.04),
-              totalStaked: Number(resTotalStake.value ?? 0),
+              kartPrice: parseFloat(resKartPrice?.value?.replace(/,/g, '') ?? 0.04),
+              totalStaked: parseFloat(resTotalStake?.value?.replace(/,/g, '') ?? 0),
               totalReward: rewardUsd
             },
           });
@@ -112,8 +112,7 @@ const useAppStore = create<TAppStore>((set, get) => {
           const resKartPrice = await traitApiService.getKartCurrency()
           const resTotalStake = await traitApiService.getTotalStakeAmount()
           const resTotalReward = await traitApiService.getTotalRewardAmount()
-          const rewardUsd = Number(resTotalReward?.value?.kart ?? 0) * Number(resKartPrice.value ?? 0.04) + Number(resTotalReward?.value?.usk ?? 0)
-
+          const rewardUsd = parseFloat(resTotalReward?.value?.kart?.replace(/,/g, '') ?? 0) * parseFloat(resKartPrice?.value?.replace(/,/g, '') ?? 0.04) + parseFloat(resTotalReward?.value?.usk?.replace(/,/g, '') ?? 0)
 
           set({
             app: {
@@ -124,8 +123,8 @@ const useAppStore = create<TAppStore>((set, get) => {
               stakedAmt: stakedAmt?.stake ?? 0,
               rewards: rewards,
               claims,
-              kartPrice: Number(resKartPrice.value ?? 0.04),
-              totalStaked: Number(resTotalStake.value ?? 0),
+              kartPrice: parseFloat(resKartPrice?.value?.replace(/,/g, '') ?? 0.04),
+              totalStaked: parseFloat(resTotalStake?.value?.replace(/,/g, '') ?? 0),
               totalReward: rewardUsd
             },
           });
