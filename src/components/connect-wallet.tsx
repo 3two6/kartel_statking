@@ -18,6 +18,11 @@ interface ITokenList {
   name: string;
   image: string;
 }
+declare global {
+  interface Window {
+    sonar?: any;
+  }
+}
 
 const tokenList: ITokenList[] = [
   {
@@ -29,18 +34,24 @@ const tokenList: ITokenList[] = [
     image: "/images/tokens/leap.svg",
   },
   {
+    name: "Sonar",
+    image: "/images/tokens/sonar.svg",
+  },
+  {
     name: "Cosmostation",
     image: "/images/tokens/cosmostation.svg",
   },
 ];
 
 const CWalletLink = {
+  sonar: "https://sonar.kujira.network/download",
   keplr: "https://www.keplr.app/download",
   cosmostation: "https://www.cosmostation.io/products/cosmostation_extension",
   leap: "https://www.leapwallet.io",
 };
 
 const defaultLoading = {
+  sonar: false,
   keplr: false,
   cosmostation: false,
   leap: false,
@@ -49,10 +60,23 @@ const defaultLoading = {
 export default function ConnectWallet() {
   const [loading, setLoading] = useState(defaultLoading);
   const { connect } = useWallet();
+  const [open, setOpen] = useState(false)
+  const { account } = useWallet();
+  const handleModal = () => {
+    !account && setOpen(!open);
+  }
 
   const handleConnectWalet = async (walletType: string) => {
     try {
       switch (walletType) {
+        case "Sonar":
+          // if (!window.sonar) {
+          //   window.open(CWalletLink.sonar, "_blank");
+          //   return;
+          // }
+          setLoading((prev) => ({ ...prev, sonar: true }));
+          await connect(Adapter.Sonar);
+          break;
         case "Keplr":
           if (!window.keplr) {
             window.open(CWalletLink.keplr, "_blank");
@@ -90,9 +114,9 @@ export default function ConnectWallet() {
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="relative rounded-lg px-4 py-2 text-sm text-white bg-purple outline-none">
+        <button className="relative rounded-lg px-4 py-2 text-sm text-white bg-purple outline-none" onClick={handleModal}>
           Connect Wallet
         </button>
       </DialogTrigger>
@@ -101,7 +125,6 @@ export default function ConnectWallet() {
           <DialogTitle className="text-center text-2xl text-white">
             Wallet Connect
           </DialogTitle>
-          <DialogDescription></DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           {tokenList.map((item, index) => (
@@ -113,15 +136,20 @@ export default function ConnectWallet() {
               <div className="flex flex-row items-center gap-5">
                 <Image
                   src={item.image}
-                  className="h-8 w-8"
+                  className={`${item.name === "Sonar" ? "w-[7rem] h-8" : "w-8 h-8"}`}
                   alt={item.name}
                   width={32}
                   height={32}
                 />
                 <span className="text-start text-lg text-white">
-                  {item.name}
+                  {item.name !== "Sonar" && item.name}
                 </span>
               </div>
+              {item.name === "Sonar" &&
+                !loading.sonar &&
+                (!window.sonar && (
+                  <ChevronRight className="h-5 w-5 text-white" />
+                ))}
               {item.name === "Keplr" &&
                 !loading.keplr &&
                 (window.keplr ? (
